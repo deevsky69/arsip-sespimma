@@ -1,0 +1,1 @@
+{% if t.status == "selesai" %}<span class="label hijau">Selesai</span>{% elif t.status == "gagal" %}<span class="label merah">Gagal</span>{% elif t.terputus %}<span class="label merah">Terputus</span>{% else %}<span class="label kuning">{{ t.get_status_display }}</span>{% endif %}

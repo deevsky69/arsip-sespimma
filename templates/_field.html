@@ -1,0 +1,10 @@
+<div class="baris{% if f.field.widget.input_type == 'checkbox' %} centang{% endif %}">
+  {% if f.field.widget.input_type == 'checkbox' %}
+    {{ f }} {{ f.label_tag }}
+  {% else %}
+    {{ f.label_tag }}
+    {{ f }}
+  {% endif %}
+  {% if f.help_text %}<div class="bantuan">{{ f.help_text|safe }}</div>{% endif %}
+  {% if f.errors %}<div class="galat">{{ f.errors }}</div>{% endif %}
+</div>

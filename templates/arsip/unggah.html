@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block judul %}Unggah dokumen · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<div class="kartu" style="max-width:860px">
+  <h1>Unggah dokumen</h1>
+  <p class="redup">Pilih file, kategori, dan angkatan. Kolom lain yang dikosongkan (judul, topik, penulis, NRP, pokjar, lokus, abstrak, kata kunci) diisi otomatis dari halaman sampul PDF dan bisa diperbaiki kemudian.</p>
+  {% if form.non_field_errors %}<div class="pesan error">{{ form.non_field_errors }}</div>{% endif %}
+  <form method="post" enctype="multipart/form-data" class="formulir">
+    {% csrf_token %}
+    <div class="grid-form">
+      <div class="penuh">{% include "_field.html" with f=form.berkas %}</div>
+      <div class="penuh">{% include "_field.html" with f=form.judul %}</div>
+      {% include "_field.html" with f=form.kategori %}
+      {% include "_field.html" with f=form.angkatan %}
+      {% include "_field.html" with f=form.nomor_tugas %}
+      {% include "_field.html" with f=form.kelompok %}
+      <div class="penuh">{% include "_field.html" with f=form.topik %}</div>
+      <div class="penuh">{% include "_field.html" with f=form.penulis %}</div>
+      {% include "_field.html" with f=form.nrp_penulis %}
+      {% include "_field.html" with f=form.nomor_serdik %}
+      {% include "_field.html" with f=form.pembimbing %}
+      {% include "_field.html" with f=form.lokus %}
+      <div class="penuh">{% include "_field.html" with f=form.kata_kunci %}</div>
+      <div class="penuh">{% include "_field.html" with f=form.abstrak %}</div>
+      {% if form.terbitkan %}<div class="penuh">{% include "_field.html" with f=form.terbitkan %}</div>{% endif %}
+    </div>
+    {% if perms.arsip.add_angkatan %}<p class="kecil redup">Angkatan belum ada di daftar? <a href="{% url 'admin:arsip_angkatan_add' %}" target="_blank">Tambah angkatan</a> lalu muat ulang halaman ini.</p>{% endif %}
+    <button class="tombol" type="submit">Unggah</button>
+  </form>
+</div>
+{% endblock %}

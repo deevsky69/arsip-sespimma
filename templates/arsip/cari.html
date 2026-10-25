@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block judul %}{% if q %}{{ q }} · {% endif %}Cari · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<form method="get" action="{% url 'arsip:cari' %}">
+  <div class="kotak-cari" style="margin-bottom:20px">
+    <input type="search" name="q" value="{{ q }}" placeholder="Cari judul, penulis, lokus, atau isi dokumen…" aria-label="Kata kunci">
+    <button class="tombol" type="submit">Cari</button>
+  </div>
+  <div class="dua-kolom">
+    <aside class="kartu filter">
+      <strong>Saring</strong>
+      <label for="f-kategori">Kategori</label>
+      <select id="f-kategori" name="kategori">
+        <option value="">Semua kategori</option>
+        {% for k in semua_kategori %}<option value="{{ k.kode }}" {% if k.kode == s.kategori %}selected{% endif %}>{{ k.kode }}</option>{% endfor %}
+      </select>
+      <label for="f-angkatan">Angkatan</label>
+      <select id="f-angkatan" name="angkatan">
+        <option value="">Semua angkatan</option>
+        {% for a in semua_angkatan %}<option value="{{ a.nomor }}" {% if a.nomor == s.angkatan %}selected{% endif %}>Angkatan {{ a.nomor }} ({{ a.tahun }})</option>{% endfor %}
+      </select>
+      <label for="f-tahun">Tahun</label>
+      <select id="f-tahun" name="tahun">
+        <option value="">Semua tahun</option>
+        {% for t in semua_tahun %}<option value="{{ t }}" {% if t == s.tahun %}selected{% endif %}>{{ t }}</option>{% endfor %}
+      </select>
+      <label for="f-topik">Topik</label>
+      <select id="f-topik" name="topik">
+        <option value="">Semua topik</option>
+        {% for t in semua_topik %}<option value="{{ t }}" title="{{ t }}" {% if t == s.topik %}selected{% endif %}>{{ t|truncatechars:60 }}</option>{% endfor %}
+      </select>
+      <label for="f-kelompok">Pokjar / kelompok</label>
+      <select id="f-kelompok" name="kelompok">
+        <option value="">Semua pokjar</option>
+        {% for k in semua_kelompok %}<option value="{{ k }}" {% if k == s.kelompok %}selected{% endif %}>{{ k }}</option>{% endfor %}
+      </select>
+      <label for="f-lokus">Lokus memuat</label>
+      <input id="f-lokus" name="lokus" type="search" value="{{ s.lokus }}" list="daftar-lokus" placeholder="mis. Polda Papua">
+      <datalist id="daftar-lokus">{% for l in semua_lokus %}<option value="{{ l }}">{% endfor %}</datalist>
+      <button class="tombol" type="submit">Terapkan</button>
+      {% if ada_saringan %}
+        <p class="kecil" style="text-align:center"><a href="{% url 'arsip:cari' %}{% if q %}?q={{ q|urlencode }}{% endif %}">Hapus saringan</a></p>
+      {% endif %}
+    </aside>
+
+    <section>
+      <div class="ringkas-hasil">
+        <div>
+          {% if q %}
+            <strong>{{ total|intcomma }}</strong> dokumen untuk <strong>“{{ q }}”</strong>
+          {% else %}
+            <strong>{{ total|intcomma }}</strong> dokumen
+          {% endif %}
+        </div>
+        <div class="urutan kecil">
+          {% if halaman.paginator.num_pages > 1 %}<span class="redup">Hlm {{ halaman.number }}/{{ halaman.paginator.num_pages }} ·</span>{% endif %}
+          <label for="f-urut" class="redup">Urutkan</label>
+          <select id="f-urut" name="urut" onchange="this.form.submit()">
+            {% for k, label in pilihan_urutan %}<option value="{{ k }}" {% if k == urutan %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      {% if q and mode == "OR" and total %}
+        <div class="pesan info">Tidak ada dokumen yang memuat <em>semua</em> kata. Ditampilkan dokumen yang memuat sebagian kata.</div>
+      {% endif %}
+      {% if q and mode == "PUSTAKA" and total %}
+        <div class="pesan info">Kata tersebut hanya ditemukan di <em>daftar pustaka</em> dokumen berikut, bukan di isinya.</div>
+      {% endif %}
+
+      {% for h in daftar %}
+        {% include "arsip/_hasil.html" %}
+      {% empty %}
+        <div class="kartu kosong">
+          {% if q %}Tidak ditemukan dokumen untuk “{{ q }}”. Coba kata lain yang lebih umum atau hapus saringan.{% else %}Belum ada dokumen.{% endif %}
+        </div>
+      {% endfor %}
+
+      {% if halaman.paginator.num_pages > 1 %}
+      <nav class="paginasi">
+        {% if halaman.has_previous %}<a href="?{{ parameter_tanpa_hal }}&amp;hal={{ halaman.previous_page_number }}">‹ Sebelumnya</a>{% endif %}
+        <span class="kini">{{ halaman.number }}</span>
+        {% if halaman.has_next %}<a href="?{{ parameter_tanpa_hal }}&amp;hal={{ halaman.next_page_number }}">Berikutnya ›</a>{% endif %}
+      </nav>
+      {% endif %}
+    </section>
+  </div>
+</form>
+{% endblock %}

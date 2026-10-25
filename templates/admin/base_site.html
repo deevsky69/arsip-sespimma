@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{# Panel Admin memakai kepala, warna, dan menu yang sama dengan situs utama. #}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/admin-arsip.css' %}">{% endblock %}
+
+{% block extrahead %}{{ block.super }}{% include "_ikon.html" %}{% endblock %}
+
+{% block branding %}
+<a class="logo-arsip" href="{% url 'arsip:beranda' %}"><img src="{% static 'img/lambang-polri.png' %}" alt="Lambang Polri" width="36" height="35">{{ site_header }}</a>
+{% if user.is_authenticated %}
+<nav class="nav-arsip" aria-label="Menu situs">
+  <a href="{% url 'arsip:beranda' %}">Beranda</a>
+  <a href="{% url 'arsip:cari' %}">Cari &amp; Jelajah</a>
+  {% if perms.arsip.add_dokumen %}<a href="{% url 'arsip:unggah' %}">Unggah</a>{% endif %}
+  {% if perms.arsip.review_dokumen %}<a href="{% url 'arsip:review' %}">Review</a>{% endif %}
+  {% if perms.arsip.review_dokumen %}<a href="{% url 'arsip:kemiripan' %}">Kemiripan</a>{% endif %}
+  {% if perms.arsip.impor_massal %}<a href="{% url 'arsip:impor' %}">Impor Drive</a>{% endif %}
+</nav>
+{% endif %}
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

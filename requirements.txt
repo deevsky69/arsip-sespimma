@@ -1,0 +1,8 @@
+Django==5.2.18
+pymupdf==1.28.2
+whitenoise==6.12.0
+python-dotenv==1.2.4
+gdown==6.4.2
+Sastrawi==1.0.1
+django-axes==8.3.1
+gunicorn==23.0.0; sys_platform != 'win32'

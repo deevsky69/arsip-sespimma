@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block judul %}Unggahan saya · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<h1>Unggahan saya</h1>
+{% if daftar %}
+<div class="gulir-x">
+<table class="tabel">
+  <thead><tr><th>Judul</th><th>Kategori</th><th>Angkatan</th><th>Status</th><th>Diunggah</th></tr></thead>
+  <tbody>
+  {% for d in daftar %}
+    <tr>
+      <td><a href="{% url 'arsip:detail' d.pk %}">{{ d.judul|truncatechars:90 }}</a>{% if d.status == "ditolak" and d.catatan_review %}<div class="kecil redup">Catatan: {{ d.catatan_review }}</div>{% endif %}</td>
+      <td>{{ d.kategori.kode }}</td>
+      <td>{{ d.angkatan.nomor }}</td>
+      <td>{% include "arsip/_status.html" %}</td>
+      <td class="kecil">{{ d.dibuat|date:"j M Y" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="kartu kosong">Anda belum mengunggah dokumen. <a href="{% url 'arsip:unggah' %}">Unggah sekarang</a>.</div>
+{% endif %}
+{% endblock %}

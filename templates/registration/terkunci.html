@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+{% block judul %}Akun terkunci sementara · {{ NAMA_SITUS }}{% endblock %}
+{% block badan %}
+<div class="halaman-login">
+  <div class="kartu" style="max-width:440px">
+    <img src="{% static 'img/lambang-polri.png' %}" alt="Lambang Polri" width="56" height="55" style="margin-bottom:10px">
+    <h2>Terlalu banyak percobaan masuk</h2>
+    <p>Login untuk akun <strong>{{ username|default:"ini" }}</strong> dari perangkat ini dikunci sementara karena
+      {{ failure_limit }} kali salah kata sandi.</p>
+    <p>Silakan coba lagi dalam <strong>{{ LOGIN_KUNCI_MENIT }} menit</strong>. Jika Anda lupa kata sandi,
+      hubungi admin arsip untuk mereset kata sandi atau membuka kunci.</p>
+    <a class="tombol garis" href="{% url 'login' %}">Kembali ke halaman masuk</a>
+  </div>
+</div>
+{% endblock %}

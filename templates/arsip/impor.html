@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block judul %}Impor dari Google Drive · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<div class="kartu" style="max-width:860px">
+  <h1>Impor dari Google Drive</h1>
+  <p class="redup">Tempel link folder pengumpulan tugas. Sistem akan mengunduh semua PDF di dalamnya (termasuk subfolder per serdik),
+    membaca halaman sampulnya untuk mengenali <strong>kategori</strong> (NKP / Policy Brief / NASKAP), <strong>angkatan</strong>,
+    judul, topik, penulis, NRP, pokjar, lokus, abstrak, dan kata kunci, lalu menyimpannya ke arsip.
+    File Word diabaikan; file yang sudah ada di arsip otomatis dilewati.</p>
+  {% if form.non_field_errors %}<div class="pesan error">{{ form.non_field_errors }}</div>{% endif %}
+  <form method="post" class="formulir">
+    {% csrf_token %}
+    <div class="grid-form">
+      <div class="penuh">{% include "_field.html" with f=form.link %}</div>
+      {% include "_field.html" with f=form.kategori_default %}
+      {% include "_field.html" with f=form.angkatan_default %}
+      {% include "_field.html" with f=form.tahun_default %}
+      <div></div>
+      <div class="penuh">{% include "_field.html" with f=form.terbitkan %}</div>
+    </div>
+    <button class="tombol" type="submit">Mulai impor</button>
+  </form>
+</div>
+
+<h2 style="margin-top:28px">Riwayat impor</h2>
+{% if riwayat %}
+<div class="gulir-x">
+<table class="tabel">
+  <thead><tr><th>#</th><th>Waktu</th><th>Oleh</th><th>Status</th><th>Hasil</th><th></th></tr></thead>
+  <tbody>
+  {% for t in riwayat %}
+    {% with j=t.ringkasan %}
+    <tr>
+      <td>{{ t.pk }}</td>
+      <td class="kecil">{{ t.dibuat|date:"j M Y H:i" }}</td>
+      <td class="kecil">{% firstof t.dibuat_oleh.get_full_name t.dibuat_oleh.username "-" %}</td>
+      <td>{% include "arsip/_status_impor.html" %}</td>
+      <td class="kecil">{% if t.status == "selesai" %}{{ j.berhasil }} masuk · {{ j.duplikat }} duplikat · {{ j.gagal }} gagal{% elif t.status == "gagal" %}{{ t.pesan_galat|truncatechars:60 }}{% else %}{{ t.persen }}%{% endif %}</td>
+      <td><a class="tombol kecil garis" href="{{ t.get_absolute_url }}">Lihat</a></td>
+    </tr>
+    {% endwith %}
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="kartu kosong">Belum ada impor.</div>
+{% endif %}
+{% endblock %}

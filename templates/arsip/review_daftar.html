@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load arsip_tag %}
+{% block judul %}Review · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<h1>Antrean review</h1>
+<p class="redup">Dokumen di bawah ini belum terlihat oleh pembaca sampai disetujui.</p>
+{% if daftar %}
+<div class="gulir-x">
+<table class="tabel">
+  <thead><tr><th>Judul</th><th>Kategori</th><th>Angkatan</th><th>Kemiripan tertinggi</th><th>Pengunggah</th><th>Diunggah</th><th></th></tr></thead>
+  <tbody>
+  {% for d in daftar %}
+    <tr>
+      <td>{{ d.judul|truncatechars:90 }}{% if d.perlu_ocr %} <span class="label merah">Perlu OCR</span>{% endif %}</td>
+      <td>{{ d.kategori.kode }}</td>
+      <td>{{ d.angkatan.nomor }}</td>
+      <td>{% if d.mirip %}{% label_kemiripan d.mirip.persen_ini %}<div class="kecil redup">dengan {{ d.mirip.lain.daftar_penulis|first }} (Ak. {{ d.mirip.lain.angkatan.nomor }})</div>{% else %}<span class="kecil redup">&lt; 5%</span>{% endif %}</td>
+      <td>{% firstof d.diunggah_oleh.get_full_name d.diunggah_oleh.username "-" %}</td>
+      <td class="kecil">{{ d.dibuat|date:"j M Y H:i" }}</td>
+      <td><a class="tombol kecil" href="{% url 'arsip:detail' d.pk %}">Periksa</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="kartu kosong">Tidak ada dokumen yang menunggu review.</div>
+{% endif %}
+{% endblock %}

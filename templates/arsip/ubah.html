@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block judul %}Ubah metadata · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<a class="kecil" href="{{ dok.get_absolute_url }}">‹ Kembali ke dokumen</a>
+<div class="kartu" style="max-width:860px;margin-top:10px">
+  <h1>Ubah metadata</h1>
+  <p class="redup kecil">{{ dok.nama_berkas_asli|default:"" }} · {{ dok.jumlah_halaman }} halaman. Perubahan langsung dipakai di pencarian.</p>
+  {% if form.non_field_errors %}<div class="pesan error">{{ form.non_field_errors }}</div>{% endif %}
+  <form method="post" class="formulir">
+    {% csrf_token %}
+    <div class="grid-form">
+      <div class="penuh">{% include "_field.html" with f=form.judul %}</div>
+      {% include "_field.html" with f=form.kategori %}
+      {% include "_field.html" with f=form.angkatan %}
+      {% include "_field.html" with f=form.nomor_tugas %}
+      {% include "_field.html" with f=form.kelompok %}
+      <div class="penuh">{% include "_field.html" with f=form.topik %}</div>
+      <div class="penuh">{% include "_field.html" with f=form.penulis %}</div>
+      {% include "_field.html" with f=form.nrp_penulis %}
+      {% include "_field.html" with f=form.nomor_serdik %}
+      {% include "_field.html" with f=form.pembimbing %}
+      {% include "_field.html" with f=form.lokus %}
+      <div class="penuh">{% include "_field.html" with f=form.kata_kunci %}</div>
+      <div class="penuh">{% include "_field.html" with f=form.abstrak %}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="tombol" type="submit">Simpan</button>
+      <a class="tombol garis" href="{{ dok.get_absolute_url }}">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

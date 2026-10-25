@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load arsip_tag humanize %}
+{% block judul %}Bandingkan naskah · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<a class="kecil" href="{% url 'arsip:kemiripan' %}">‹ Kembali ke daftar kemiripan</a>
+<h1 style="margin-top:8px">Perbandingan naskah</h1>
+
+<div class="banding-kepala">
+  <div class="kartu">
+    <div class="kecil redup">Naskah A · {{ a.kategori.kode }}{% if a.nomor_tugas %} {{ a.nomor_tugas }}{% endif %} · Angkatan {{ a.angkatan.nomor }} ({{ a.angkatan.tahun }})</div>
+    <a href="{% url 'arsip:detail' a.pk %}"><strong>{{ a.judul }}</strong></a>
+    <div class="kecil">{{ a.daftar_penulis|join:", " }}{% if a.lokus %} · Lokus: {{ a.lokus }}{% endif %}</div>
+    <div class="angka-besar">{{ hasil.persen_a|floatformat:1 }}%</div>
+    <div class="kecil redup">isi naskah A yang juga terdapat di naskah B</div>
+  </div>
+  <div class="kartu">
+    <div class="kecil redup">Naskah B · {{ b.kategori.kode }}{% if b.nomor_tugas %} {{ b.nomor_tugas }}{% endif %} · Angkatan {{ b.angkatan.nomor }} ({{ b.angkatan.tahun }})</div>
+    <a href="{% url 'arsip:detail' b.pk %}"><strong>{{ b.judul }}</strong></a>
+    <div class="kecil">{{ b.daftar_penulis|join:", " }}{% if b.lokus %} · Lokus: {{ b.lokus }}{% endif %}</div>
+    <div class="angka-besar">{{ hasil.persen_b|floatformat:1 }}%</div>
+    <div class="kecil redup">isi naskah B yang juga terdapat di naskah A</div>
+  </div>
+</div>
+
+<div class="kartu">
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <span class="label mirip-{{ tingkat.0 }}">{{ tingkat.1 }}</span>
+    <span>{{ hasil.bagian|length }} bagian sama · {{ hasil.kata_sama|intcomma }} kata · <strong>{{ hasil.kata_diganti }}</strong> kata hanya berganti nama tempat/satuan/angka</span>
+  </div>
+  {% if contoh_diganti %}
+  <p class="kecil" style="margin:10px 0 0"><strong>Contoh penggantian:</strong>
+    {% for x, y in contoh_diganti %}<span class="ganti">{{ x }} → {{ y }}</span>{% endfor %}
+  </p>
+  {% endif %}
+  <p class="kecil redup" style="margin:10px 0 0">
+    <mark class="beda">Sorotan</mark> = kata yang berbeda di dalam bagian yang sama (termasuk nama tempat/angka yang diganti).
+    Naskah dari angkatan yang lebih lama biasanya sumbernya. Keputusan tetap di tangan reviewer.
+  </p>
+</div>
+
+{% for bg in hasil.bagian %}
+<div class="banding-bagian">
+  <div class="kartu">
+    <div class="kecil redup">Naskah A · hlm {{ bg.halaman_a }} · {{ bg.panjang }} kata{% if bg.kata_diganti %} · {{ bg.kata_diganti }} diganti{% endif %}</div>
+    <div class="banding-teks">{{ bg.html_a }}</div>
+  </div>
+  <div class="kartu">
+    <div class="kecil redup">Naskah B · hlm {{ bg.halaman_b }}</div>
+    <div class="banding-teks">{{ bg.html_b }}</div>
+  </div>
+</div>
+{% empty %}
+<div class="kartu kosong">Tidak ada bagian panjang yang sama (minimal 15 kata berurutan).</div>
+{% endfor %}
+{% endblock %}

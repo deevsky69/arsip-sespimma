@@ -1,0 +1,6 @@
+# Akhir baris LF di repositori (penting untuk Dockerfile/Caddyfile di server Linux)
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.ico binary
+*.pdf binary

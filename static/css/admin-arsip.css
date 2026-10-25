@@ -1,0 +1,102 @@
+/* Menyamakan Panel Admin Django dengan tampilan situs arsip (navy + emas). */
+
+:root,
+html[data-theme] {
+  --primary: #1d3a6b;
+  --secondary: #13284b;
+  --accent: #c69a2b;
+  --header-color: #d8e0ee;
+  --header-branding-color: #fff;
+  --header-bg: #13284b;
+  --header-link-color: #fff;
+  --breadcrumbs-bg: #1d3a6b;
+  --breadcrumbs-fg: #c9d4e8;
+  --breadcrumbs-link-fg: #fff;
+  --button-bg: #13284b;
+  --button-hover-bg: #1d3a6b;
+  --default-button-bg: #c69a2b;
+  --default-button-hover-bg: #b0881f;
+  --object-tools-bg: #1d3a6b;
+  --object-tools-hover-bg: #13284b;
+  --font-family-primary: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html[data-theme="light"] {
+  --link-fg: #1d3a6b;
+  --link-hover-color: #c69a2b;
+  --link-selected-fg: #13284b;
+  --selected-row: #f6ecd2;
+}
+@media (prefers-color-scheme: light) {
+  html[data-theme="auto"] {
+    --link-fg: #1d3a6b;
+    --link-hover-color: #c69a2b;
+    --link-selected-fg: #13284b;
+    --selected-row: #f6ecd2;
+  }
+}
+
+#header {
+  border-bottom: 3px solid #c69a2b;
+  min-height: 60px;
+  padding: 8px 40px;
+  gap: 16px;
+}
+#branding {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+.logo-arsip {
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+}
+.logo-arsip img {
+  width: 36px;
+  height: auto;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+.nav-arsip {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.nav-arsip a,
+.nav-arsip a:link,
+.nav-arsip a:visited {
+  color: #d8e0ee;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.93rem;
+}
+.nav-arsip a:hover,
+.nav-arsip a.aktif {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+#user-tools {
+  font-size: 0.85rem;
+}
+
+@media (max-width: 1024px) {
+  #header {
+    padding: 8px 16px;
+  }
+  .nav-arsip {
+    flex-basis: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .nav-arsip a {
+    white-space: nowrap;
+  }
+}

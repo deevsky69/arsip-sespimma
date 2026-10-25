@@ -1,0 +1,54 @@
+{% load static %}<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block judul %}{{ NAMA_SITUS }}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/arsip.css' %}">
+  {% include "_ikon.html" %}
+</head>
+<body>
+{% block badan %}
+<header class="kepala">
+  <div class="wadah">
+    <a class="logo" href="{% url 'arsip:beranda' %}">
+      <img class="lambang-img" src="{% static 'img/lambang-polri.png' %}" alt="Lambang Polri" width="40" height="39">
+      <span class="logo-teks">{{ NAMA_SITUS }}<small>Sespim Lemdiklat Polri</small></span>
+    </a>
+    {% with nama_url=request.resolver_match.url_name %}
+    <nav class="nav">
+      <a href="{% url 'arsip:beranda' %}" class="{% if nama_url == 'beranda' %}aktif{% endif %}">Beranda</a>
+      <a href="{% url 'arsip:cari' %}" class="{% if nama_url == 'cari' %}aktif{% endif %}">Cari &amp; Jelajah</a>
+      {% if perms.arsip.add_dokumen %}
+        <a href="{% url 'arsip:unggah' %}" class="{% if nama_url == 'unggah' %}aktif{% endif %}">Unggah</a>
+        <a href="{% url 'arsip:unggahan_saya' %}" class="{% if nama_url == 'unggahan_saya' %}aktif{% endif %}">Unggahan Saya</a>
+      {% endif %}
+      {% if perms.arsip.review_dokumen %}
+        <a href="{% url 'arsip:review' %}" class="{% if nama_url == 'review' %}aktif{% endif %}">Review{% if jumlah_menunggu_review %}<span class="lencana">{{ jumlah_menunggu_review }}</span>{% endif %}</a>
+      {% endif %}
+      {% if perms.arsip.review_dokumen %}
+        <a href="{% url 'arsip:kemiripan' %}" class="{% if nama_url == 'kemiripan' or nama_url == 'kemiripan_banding' %}aktif{% endif %}">Kemiripan</a>
+      {% endif %}
+      {% if perms.arsip.impor_massal %}
+        <a href="{% url 'arsip:impor' %}" class="{% if nama_url == 'impor' or nama_url == 'impor_detail' %}aktif{% endif %}">Impor Drive</a>
+      {% endif %}
+      {% if user.is_staff %}<a href="{% url 'admin:index' %}">Panel Admin</a>{% endif %}
+    </nav>
+    {% endwith %}
+    <div class="akun">
+      <a href="{% url 'password_change' %}" style="color:inherit" title="Ganti kata sandi">{% firstof user.get_full_name user.username "-" %}</a>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Keluar</button></form>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="wadah">
+    {% for m in messages %}<div class="pesan {{ m.tags }}">{{ m }}</div>{% endfor %}
+    {% block isi %}{% endblock %}
+  </div>
+</main>
+<footer class="kaki">{% include "_ornamen.html" %}<br>{{ NAMA_SITUS }} · Dokumen hanya untuk keperluan pendidikan internal. Setiap akses tercatat.</footer>
+{% endblock %}
+</body>
+</html>

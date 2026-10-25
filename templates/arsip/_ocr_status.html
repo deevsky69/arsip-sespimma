@@ -1,0 +1,49 @@
+{% if dok.status_ocr == "antre" or dok.status_ocr == "proses" %}
+<div class="pesan info" id="ocr-kotak" data-url="{% url 'arsip:ocr_status' dok.pk %}">
+  <strong id="ocr-label">{{ dok.get_status_ocr_display }}</strong> —
+  dokumen ini hasil scan, teksnya sedang dibaca agar isinya bisa dicari.
+  <span id="ocr-angka" class="kecil">{% if dok.status_ocr == "proses" %}{{ dok.ocr_kemajuan }} / {{ dok.jumlah_halaman }} halaman{% endif %}</span>
+  <div class="bilah"><div id="ocr-bilah" style="width: {% widthratio dok.ocr_kemajuan dok.jumlah_halaman|default:1 100 %}%"></div></div>
+</div>
+<script>
+  (function () {
+    var kotak = document.getElementById("ocr-kotak");
+    function periksa() {
+      fetch(kotak.dataset.url, { credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d.status !== "antre" && d.status !== "proses") { window.location.reload(); return; }
+          document.getElementById("ocr-label").textContent = d.label;
+          if (d.status === "proses" && d.total) {
+            document.getElementById("ocr-angka").textContent = d.kemajuan + " / " + d.total + " halaman";
+            document.getElementById("ocr-bilah").style.width = Math.round(100 * d.kemajuan / d.total) + "%";
+          }
+          setTimeout(periksa, 4000);
+        })
+        .catch(function () { setTimeout(periksa, 10000); });
+    }
+    setTimeout(periksa, 4000);
+  })();
+</script>
+{% elif dok.status_ocr == "gagal" %}
+<div class="pesan error">
+  <strong>OCR gagal.</strong> {{ dok.ocr_pesan }}
+  {% if perms.arsip.change_dokumen %}
+  <form method="post" action="{% url 'arsip:ocr_jalankan' dok.pk %}" style="margin-top:8px">{% csrf_token %}<button class="tombol kecil" type="submit">Ulangi OCR</button></form>
+  {% endif %}
+</div>
+{% elif dok.status_ocr == "selesai" %}
+<div class="pesan info kecil">
+  Teks dokumen ini dibaca dengan <strong>OCR</strong> dari hasil scan, sehingga bisa mengandung salah baca.{% if dok.ocr_pesan %} {{ dok.ocr_pesan }}{% endif %}
+  {% if perms.arsip.change_dokumen %}
+  <form method="post" action="{% url 'arsip:ocr_jalankan' dok.pk %}" style="display:inline">{% csrf_token %}<button class="tombol kecil garis" type="submit" style="margin-left:8px">Ulangi OCR</button></form>
+  {% endif %}
+</div>
+{% elif dok.perlu_ocr %}
+<div class="pesan warning">
+  <strong>PDF hasil scan:</strong> isinya belum bisa dicari karena belum di-OCR.
+  {% if perms.arsip.change_dokumen %}
+  <form method="post" action="{% url 'arsip:ocr_jalankan' dok.pk %}" style="margin-top:8px">{% csrf_token %}<button class="tombol kecil" type="submit">Jalankan OCR</button></form>
+  {% endif %}
+</div>
+{% endif %}

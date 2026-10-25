@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load humanize arsip_tag %}
+{% block judul %}{{ dok.judul|truncatechars:70 }} · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<div class="detail-kepala">
+  <a class="kecil" href="{% url 'arsip:cari' %}{% if q %}?q={{ q|urlencode }}{% endif %}">‹ Kembali ke {% if q %}hasil pencarian{% else %}daftar dokumen{% endif %}</a>
+  <h1>{{ dok.judul }}</h1>
+  <div>
+    <span class="label">{{ dok.kategori.kode }}{% if dok.nomor_tugas %} {{ dok.nomor_tugas }}{% endif %}</span>
+    <span class="label navy">Angkatan {{ dok.angkatan.nomor }} · {{ dok.angkatan.tahun }}</span>
+    {% if dok.status != "terbit" %}{% include "arsip/_status.html" with d=dok %}{% endif %}
+    {% if dok.status_ocr == "selesai" %}<span class="label navy">Teks OCR</span>{% elif dok.perlu_ocr %}<span class="label merah">PDF hasil scan{% if dok.status_ocr %} · {{ dok.get_status_ocr_display|lower }}{% else %}, perlu OCR{% endif %}</span>{% endif %}
+  </div>
+</div>
+
+{% include "arsip/_ocr_status.html" %}
+
+{% if dok.status == "ditolak" and dok.catatan_review %}
+  <div class="pesan error"><strong>Alasan penolakan:</strong> {{ dok.catatan_review }}</div>
+{% endif %}
+
+<div class="detail-grid">
+  <div>
+    <div class="kartu">
+      <table class="tabel-meta">
+        <tr><th>Penulis</th><td>{% for p in dok.daftar_penulis %}{{ p }}<br>{% endfor %}{% if dok.nrp_penulis %}<span class="redup kecil">NRP {{ dok.nrp_penulis }}</span><br>{% endif %}{% if dok.nomor_serdik %}<span class="redup kecil">No. Serdik {{ dok.nomor_serdik }}</span>{% endif %}</td></tr>
+        {% if dok.topik %}<tr><th>Topik</th><td><a href="{% url 'arsip:cari' %}?topik={{ dok.topik|urlencode }}">{{ dok.topik }}</a></td></tr>{% endif %}
+        {% if dok.kelompok %}<tr><th>Kelompok</th><td><a href="{% url 'arsip:cari' %}?kelompok={{ dok.kelompok|urlencode }}&amp;angkatan={{ dok.angkatan.nomor }}">{{ dok.kelompok }}</a></td></tr>{% endif %}
+        {% if dok.pembimbing %}<tr><th>Pembimbing</th><td>{{ dok.pembimbing }}</td></tr>{% endif %}
+        {% if dok.lokus %}<tr><th>Lokus</th><td>{{ dok.lokus }}</td></tr>{% endif %}
+        {% if dok.kata_kunci %}<tr><th>Kata kunci</th><td>{% for k in dok.daftar_kata_kunci %}<a href="{% url 'arsip:cari' %}?q=%22{{ k|urlencode }}%22">{{ k }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</td></tr>{% endif %}
+        <tr><th>Kategori</th><td>{{ dok.kategori.nama }}</td></tr>
+        <tr><th>Halaman</th><td>{{ dok.jumlah_halaman }} hlm · {{ dok.jumlah_kata|intcomma }} kata</td></tr>
+      </table>
+      <p style="margin:14px 0 0;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="tombol kecil" href="{% url 'arsip:baca' dok.pk %}#page={{ hlm_awal }}" target="_blank" rel="noopener">Buka PDF di tab baru</a>
+        {% if izinkan_unduh %}<a class="tombol kecil garis" href="{% url 'arsip:baca' dok.pk %}?unduh=1">Unduh</a>{% endif %}
+        {% if perms.arsip.change_dokumen %}<a class="tombol kecil garis" href="{% url 'arsip:ubah' dok.pk %}">Ubah metadata</a>{% endif %}
+      </p>
+    </div>
+
+    {% if q %}
+    <div class="kartu">
+      <h3>“{{ q }}” di dokumen ini</h3>
+      {% if cuplikan %}
+        <p class="redup kecil">Ditemukan di {{ cuplikan|length }} halaman. Klik untuk melompat.</p>
+        <div class="cuplikan daftar-halaman">
+          {% for c in cuplikan %}
+            <a href="?q={{ q|urlencode }}&amp;hlm={{ c.halaman }}" data-hlm="{{ c.halaman }}" class="lompat"><span class="hlm">Hlm {{ c.halaman }}{% if c.pustaka %} · daftar pustaka{% endif %}</span>{{ c.html }}</a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="redup kecil">Kata tersebut hanya cocok di judul/metadata, tidak di isi halaman.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if kemiripan is not None %}
+    <div class="kartu">
+      <h3>Kemiripan dengan naskah lain</h3>
+      {% if kemiripan %}
+        {% for m in kemiripan %}
+          <div class="mirip-baris">
+            {% label_kemiripan m.persen_ini %}
+            <a href="{% if m.k.dokumen_a_id == dok.pk %}{% url 'arsip:kemiripan_banding' dok.pk m.lain.pk %}{% else %}{% url 'arsip:kemiripan_banding' m.lain.pk dok.pk %}{% endif %}">{{ m.lain.judul|truncatechars:70 }}</a>
+            <div class="kecil redup">{{ m.lain.kategori.kode }} · Ak. {{ m.lain.angkatan.nomor }} · {{ m.lain.daftar_penulis|first }}{% if m.k.kata_diganti %} · {{ m.k.kata_diganti }} kata lokus/angka diganti{% endif %}</div>
+          </div>
+        {% endfor %}
+        <p class="kecil redup" style="margin:8px 0 0">Persentase = bagian isi naskah ini yang juga terdapat di naskah tersebut.</p>
+      {% else %}
+        <p class="kecil redup" style="margin:0">Tidak ada naskah lain di arsip dengan kemiripan 5% atau lebih.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if dok.abstrak %}
+    <div class="kartu">
+      <h3>Abstrak</h3>
+      <div class="abstrak">{{ dok.abstrak }}</div>
+    </div>
+    {% endif %}
+
+    {% if boleh_review %}
+    <div class="kartu">
+      <h3>Review</h3>
+      <p class="redup kecil">Diunggah oleh {% firstof dok.diunggah_oleh.get_full_name dok.diunggah_oleh.username "-" %} pada {{ dok.dibuat|date:"j M Y H:i" }}.</p>
+      <form method="post" action="{% url 'arsip:review_putus' dok.pk %}" class="formulir">
+        {% csrf_token %}
+        <div class="baris">{{ form_review.catatan.label_tag }}{{ form_review.catatan }}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="tombol hijau" name="keputusan" value="setujui">Setujui &amp; terbitkan</button>
+          <button class="tombol merah" name="keputusan" value="tolak">Tolak</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  <div>
+    <iframe id="penampil" class="penampil" title="Pratinjau PDF" src="{% url 'arsip:baca' dok.pk %}#page={{ hlm_awal }}"></iframe>
+    <p class="redup kecil">PDF diberi watermark nama Anda. Jika pratinjau tidak tampil (umumnya di HP), gunakan tombol <em>Buka PDF di tab baru</em>.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var bingkai = document.getElementById("penampil");
+    var dasar = "{% url 'arsip:baca' dok.pk %}";
+    document.querySelectorAll("a.lompat").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        if (window.innerWidth < 960) return; // di layar kecil, muat ulang halaman saja
+        e.preventDefault();
+        // Ganti src (bukan hanya hash) agar penampil PDF di semua browser benar-benar pindah halaman.
+        bingkai.src = dasar + "?h=" + a.dataset.hlm + "#page=" + a.dataset.hlm;
+      });
+    });
+  })();
+</script>
+{% endblock %}

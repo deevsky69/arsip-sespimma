@@ -1,0 +1,28 @@
+{% with d=h.dokumen %}
+<article class="hasil">
+  <div>
+    <span class="label">{{ d.kategori.kode }}{% if d.nomor_tugas %} {{ d.nomor_tugas }}{% endif %}</span>
+    <span class="label navy">Angkatan {{ d.angkatan.nomor }} · {{ d.angkatan.tahun }}</span>
+    {% if d.status_ocr == "antre" or d.status_ocr == "proses" %}<span class="label kuning" title="Isi sedang dibaca dengan OCR">OCR berjalan</span>{% elif d.perlu_ocr %}<span class="label merah" title="PDF hasil scan, isinya belum bisa dicari">Perlu OCR</span>{% elif d.status_ocr == "selesai" %}<span class="label navy" title="Teks dibaca dengan OCR dari hasil scan">Teks OCR</span>{% endif %}
+  </div>
+  <a class="judul" href="{% url 'arsip:detail' d.pk %}{% if q %}?q={{ q|urlencode }}{% endif %}">{{ d.judul }}</a>
+  <div class="meta">
+    <span>{{ d.daftar_penulis|join:", "|truncatechars:120 }}</span>
+    {% if d.kelompok %}<span>{{ d.kelompok }}</span>{% endif %}
+    {% if d.lokus %}<span>Lokus: {{ d.lokus }}</span>{% endif %}
+    {% if d.jumlah_halaman %}<span>{{ d.jumlah_halaman }} hlm</span>{% endif %}
+    {% if h.jumlah_halaman_cocok %}<span>cocok di {{ h.jumlah_halaman_cocok }} halaman</span>{% endif %}
+  </div>
+  {% if h.cuplikan %}
+  <div class="cuplikan">
+    {% for c in h.cuplikan %}
+      <a href="{% url 'arsip:detail' d.pk %}?q={{ q|urlencode }}&amp;hlm={{ c.halaman|default:1 }}">
+        <span class="hlm">{% if c.halaman %}Hlm {{ c.halaman }}{% if c.pustaka %} · daftar pustaka{% endif %}{% else %}Judul/metadata{% endif %}</span>{{ c.html }}
+      </a>
+    {% endfor %}
+  </div>
+  {% elif d.abstrak %}
+  <div class="cuplikan redup">{{ d.abstrak|truncatewords:45 }}</div>
+  {% endif %}
+</article>
+{% endwith %}

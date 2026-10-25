@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block judul %}Masuk · {{ NAMA_SITUS }}{% endblock %}
+{% block badan %}
+<div class="halaman-login">
+  <div class="login-bingkai">
+    <section class="login-sambutan">
+      <img class="login-lambang" src="{% static 'img/lambang-polri.png' %}" alt="Lambang Polri" width="96" height="94">
+      <div class="alis">{% include "_ornamen.html" %}<span>Sespim Lemdiklat Polri</span></div>
+      <h1>{{ NAMA_SITUS }}</h1>
+      <p>Naskah NKP, NASKAP, dan Policy Brief dari setiap angkatan dalam satu tempat, dan bisa dicari sampai ke isinya.</p>
+    </section>
+    <section class="kartu login-form">
+      <h2>Masuk</h2>
+      <p class="redup kecil">Gunakan akun yang diberikan admin. Username umumnya NRP Anda.</p>
+      {% if form.non_field_errors %}<div class="pesan error">Username atau kata sandi salah.</div>{% endif %}
+      <form method="post" class="formulir">
+        {% csrf_token %}
+        <div class="baris"><label for="id_username">Username / NRP</label>{{ form.username }}</div>
+        <div class="baris"><label for="id_password">Kata sandi</label>{{ form.password }}</div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="tombol" type="submit">Masuk</button>
+      </form>
+      <p class="redup kecil" style="margin:16px 0 0">Akses tercatat. Dokumen hanya untuk keperluan pendidikan internal.</p>
+    </section>
+  </div>
+</div>
+{% endblock %}

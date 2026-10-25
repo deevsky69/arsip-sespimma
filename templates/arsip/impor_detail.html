@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block judul %}Impor #{{ t.pk }} · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+{% if t.berjalan and not t.terputus %}<meta http-equiv="refresh" content="3">{% endif %}
+<a class="kecil" href="{% url 'arsip:impor' %}">‹ Kembali ke Impor Drive</a>
+<h1 style="margin-top:8px">Impor #{{ t.pk }} {% include "arsip/_status_impor.html" %}</h1>
+<p class="redup kecil" style="word-break:break-all">
+  {{ t.link }}<br>
+  Dimulai {{ t.dibuat|date:"j M Y H:i" }} oleh {% firstof t.dibuat_oleh.get_full_name t.dibuat_oleh.username "-" %}
+  · {% if t.terbitkan %}langsung terbit{% else %}masuk antrean review{% endif %}
+  {% if t.kategori_default %}· kategori default {{ t.kategori_default }}{% endif %}
+  {% if t.angkatan_default %}· angkatan default {{ t.angkatan_default }}{% endif %}
+</p>
+
+{% if t.berjalan and not t.terputus %}
+<div class="kartu">
+  <strong>{{ t.get_status_display }}…</strong>
+  <span class="redup kecil">{% if t.jumlah_total %}{{ t.jumlah_selesai }} / {{ t.jumlah_total }} file{% else %}membaca isi folder…{% endif %}</span>
+  <div class="bilah"><div style="width: {{ t.persen }}%"></div></div>
+  <p class="redup kecil" style="margin:8px 0 0">Halaman ini diperbarui otomatis. Boleh ditinggal; proses tetap berjalan di server.</p>
+</div>
+{% endif %}
+
+{% if t.status == "gagal" or t.terputus %}
+<div class="pesan error">
+  {% if t.terputus %}Impor terhenti (server mungkin sempat dimatikan).{% else %}{{ t.pesan_galat }}{% endif %}
+  <form method="post" action="{% url 'arsip:impor_ulang' t.pk %}" style="margin-top:8px">{% csrf_token %}
+    <button class="tombol kecil" type="submit">Ulangi impor</button>
+    <span class="kecil redup">Dokumen yang sudah masuk akan dilewati.</span>
+  </form>
+</div>
+{% endif %}
+
+{% if hasil %}
+<div class="grid-statistik">
+  <div class="statistik"><div class="angka">{{ jumlah.berhasil }}</div><div class="nama">berhasil masuk</div></div>
+  <div class="statistik"><div class="angka">{{ jumlah.duplikat }}</div><div class="nama">sudah ada (dilewati)</div></div>
+  <div class="statistik"><div class="angka">{{ jumlah.gagal }}</div><div class="nama">gagal</div></div>
+  <div class="statistik"><div class="angka">{{ jumlah.dilewati }}</div><div class="nama">hanya file Word</div></div>
+</div>
+
+<div class="gulir-x">
+<table class="tabel">
+  <thead><tr><th>Status</th><th>Kategori</th><th>Ak.</th><th>Judul &amp; penulis</th><th>Lokus</th><th>Keterangan</th></tr></thead>
+  <tbody>
+  {% for h in hasil %}
+    <tr>
+      <td>
+        {% if h.status == "berhasil" %}<span class="label hijau">Masuk</span>
+        {% elif h.status == "duplikat" %}<span class="label navy">Sudah ada</span>
+        {% elif h.status == "dilewati" %}<span class="label kuning">Dilewati</span>
+        {% else %}<span class="label merah">Gagal</span>{% endif %}
+      </td>
+      <td class="kecil">{{ h.kategori|default:"-" }}{% if h.nomor_tugas %} {{ h.nomor_tugas }}{% endif %}</td>
+      <td class="kecil">{{ h.angkatan|default:"-" }}</td>
+      <td>
+        {% if h.dokumen_id %}<a href="{% url 'arsip:detail' h.dokumen_id %}">{{ h.judul|default:h.nama_file|truncatechars:110 }}</a>
+        {% else %}{{ h.judul|default:"—"|truncatechars:110 }}{% endif %}
+        <div class="kecil redup">{{ h.penulis|default:"" }}{% if h.penulis %} · {% endif %}{{ h.nama_file|truncatechars:90 }}</div>
+      </td>
+      <td class="kecil">{{ h.lokus|default:"-" }}</td>
+      <td class="kecil">{{ h.pesan }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="redup kecil">Metadata yang keliru dapat diperbaiki di Panel Admin → Dokumen.</p>
+{% endif %}
+
+{% if t.log %}
+<details style="margin-top:16px"><summary class="kecil">Catatan proses</summary>
+  <pre class="kecil" style="white-space:pre-wrap;background:#fff;border:1px solid var(--garis);border-radius:8px;padding:12px">{{ t.log }}</pre>
+</details>
+{% endif %}
+{% endblock %}

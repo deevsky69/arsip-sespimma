@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block isi %}
+<section class="pahlawan">
+  <div class="pahlawan-teks">
+    <div class="alis">{% include "_ornamen.html" %}<span>Sespimma · Lemdiklat Polri</span></div>
+    <h1>Cari naskah angkatan terdahulu</h1>
+    <p>Telusuri judul, penulis, lokus, sampai isi setiap halaman dari {{ total|intcomma }} dokumen.</p>
+    <form class="kotak-cari" action="{% url 'arsip:cari' %}" method="get" role="search">
+      <input type="search" name="q" placeholder="mis. konflik sosial, pungli, &quot;restorative justice&quot;" autofocus aria-label="Kata kunci">
+      <button class="tombol" type="submit">Cari</button>
+    </form>
+    <div class="tips">Tips: <code>"frasa persis"</code> untuk mencari kata berurutan, <code>-kata</code> untuk mengecualikan.</div>
+  </div>
+</section>
+
+<h2>Kategori</h2>
+<div class="grid-statistik">
+  {% for k in per_kategori %}
+  <a class="statistik" href="{% url 'arsip:cari' %}?kategori={{ k.kode|urlencode }}">
+    <div class="angka">{{ k.jumlah|intcomma }}</div>
+    <div class="nama"><strong>{{ k.kode }}</strong>{% if k.nama != k.kode %} · {{ k.nama }}{% endif %}</div>
+  </a>
+  {% endfor %}
+</div>
+
+{% if per_angkatan %}
+<h2>Angkatan</h2>
+<div class="grid-statistik">
+  {% for a in per_angkatan %}
+  <a class="statistik" href="{% url 'arsip:cari' %}?angkatan={{ a.nomor }}">
+    <div class="angka">{{ a.nomor }}</div>
+    <div class="nama">Tahun {{ a.tahun }} · {{ a.jumlah }} dokumen</div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<h2>Baru ditambahkan</h2>
+{% for h in terbaru %}
+  {% include "arsip/_hasil.html" %}
+{% empty %}
+  <div class="kartu kosong">Belum ada dokumen yang diterbitkan.{% if perms.arsip.add_dokumen %} <a href="{% url 'arsip:unggah' %}">Unggah dokumen pertama</a>.{% endif %}</div>
+{% endfor %}
+{% endblock %}

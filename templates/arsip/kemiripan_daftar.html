@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load arsip_tag %}
+{% block judul %}Kemiripan · {{ NAMA_SITUS }}{% endblock %}
+{% block isi %}
+<h1>Kemiripan antar naskah</h1>
+<p class="redup">Pasangan naskah yang isinya mirip. Nama tempat, satuan, dan angka disamarkan sebelum dibandingkan,
+  sehingga naskah yang <strong>hanya mengganti lokus</strong> tetap terdeteksi. Teks templat (sampul, surat pernyataan,
+  kalimat topik yang sama) diabaikan. Persentase adalah bagian isi sebuah naskah yang juga ditemukan di naskah pasangannya.
+  Hasil ini adalah <em>petunjuk untuk diperiksa</em>, bukan vonis.</p>
+
+<form method="get" class="kartu filter-baris">
+  <label for="f-min">Minimal</label>
+  <select id="f-min" name="min">
+    <option value="5" {% if minimal == 5 %}selected{% endif %}>5%</option>
+    <option value="8" {% if minimal == 8 %}selected{% endif %}>8% (mirip sebagian)</option>
+    <option value="20" {% if minimal == 20 %}selected{% endif %}>20% (perlu diperiksa)</option>
+    <option value="40" {% if minimal == 40 %}selected{% endif %}>40% (sangat mirip)</option>
+  </select>
+  <label for="f-angkatan">Angkatan</label>
+  <select id="f-angkatan" name="angkatan">
+    <option value="">Semua</option>
+    {% for a in semua_angkatan %}<option value="{{ a.nomor }}" {% if a.nomor == angkatan %}selected{% endif %}>{{ a.nomor }} ({{ a.tahun }})</option>{% endfor %}
+  </select>
+  <button class="tombol kecil" type="submit">Terapkan</button>
+</form>
+
+{% if halaman.object_list %}
+<div class="gulir-x">
+<table class="tabel">
+  <thead><tr><th>Tingkat</th><th>Naskah A</th><th>Naskah B</th><th>Lokus/angka diganti</th><th></th></tr></thead>
+  <tbody>
+  {% for k in halaman.object_list %}
+    <tr>
+      <td>{% label_kemiripan k.maks %}</td>
+      <td>
+        <a href="{% url 'arsip:detail' k.dokumen_a.pk %}">{{ k.dokumen_a.judul|truncatechars:80 }}</a>
+        <div class="kecil redup">{{ k.dokumen_a.kategori.kode }} · Ak. {{ k.dokumen_a.angkatan.nomor }} · {{ k.dokumen_a.daftar_penulis|first|default:"-" }}</div>
+        <div class="kecil"><strong>{{ k.persen_a|floatformat:0 }}%</strong> isinya ada di naskah B</div>
+      </td>
+      <td>
+        <a href="{% url 'arsip:detail' k.dokumen_b.pk %}">{{ k.dokumen_b.judul|truncatechars:80 }}</a>
+        <div class="kecil redup">{{ k.dokumen_b.kategori.kode }} · Ak. {{ k.dokumen_b.angkatan.nomor }} · {{ k.dokumen_b.daftar_penulis|first|default:"-" }}</div>
+        <div class="kecil"><strong>{{ k.persen_b|floatformat:0 }}%</strong> isinya ada di naskah A</div>
+      </td>
+      <td class="kecil">{% if k.kata_diganti %}{{ k.kata_diganti }} kata{% else %}-{% endif %}<div class="redup">{{ k.jumlah_bagian }} bagian sama</div></td>
+      <td><a class="tombol kecil" href="{% url 'arsip:kemiripan_banding' k.dokumen_a.pk k.dokumen_b.pk %}">Bandingkan</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if halaman.paginator.num_pages > 1 %}
+<nav class="paginasi">
+  {% if halaman.has_previous %}<a href="?min={{ minimal }}{% if angkatan %}&amp;angkatan={{ angkatan }}{% endif %}&amp;hal={{ halaman.previous_page_number }}">‹ Sebelumnya</a>{% endif %}
+  <span class="kini">{{ halaman.number }}</span>
+  {% if halaman.has_next %}<a href="?min={{ minimal }}{% if angkatan %}&amp;angkatan={{ angkatan }}{% endif %}&amp;hal={{ halaman.next_page_number }}">Berikutnya ›</a>{% endif %}
+</nav>
+{% endif %}
+{% else %}
+<div class="kartu kosong">Tidak ada pasangan naskah dengan kemiripan {{ minimal }}% atau lebih.</div>
+{% endif %}
+{% endblock %}
