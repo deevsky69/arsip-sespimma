@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Panduan Penggunaan ARSIP SESPIMMA</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm 20mm 18mm; }
+  @page :first { margin: 0; }
+  :root { --navy: #13284b; --navy2: #1d3a6b; --emas: #c69a2b; --emas-muda: #f6ecd2; --teks: #1d2433; --redup: #5d6678; --garis: #dde1e9; --hijau: #1f7a4d; --merah: #b3261e; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: "Segoe UI", system-ui, Arial, sans-serif; font-size: 10.6pt; line-height: 1.55; color: var(--teks); }
+  h1 { font-size: 20pt; color: var(--navy); margin: 0 0 6px; line-height: 1.2; }
+  h2 { font-size: 13.5pt; color: var(--navy); margin: 20px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--emas-muda); break-after: avoid; }
+  h3 { font-size: 11.5pt; color: var(--navy2); margin: 14px 0 6px; break-after: avoid; }
+  p { margin: 0 0 8px; }
+  ul, ol { margin: 0 0 10px; padding-left: 22px; }
+  li { margin-bottom: 3px; }
+  a { color: var(--navy2); }
+  code, .kode { font-family: Consolas, monospace; background: #eef1f6; padding: 1px 5px; border-radius: 4px; font-size: 9.6pt; }
+  strong { color: #111827; }
+
+  /* Sampul */
+  .sampul { height: 297mm; width: 210mm; background: linear-gradient(160deg, #13284b 0%, #1d3a6b 70%, #24467d 100%); color: #fff; position: relative; padding: 38mm 24mm 24mm; break-after: page; }
+  .sampul img { width: 34mm; display: block; margin-bottom: 14mm; filter: drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
+  .sampul .alis { color: var(--emas); letter-spacing: 3px; font-weight: 700; font-size: 10pt; text-transform: uppercase; }
+  .sampul .garis-emas { width: 34mm; height: 3px; background: var(--emas); margin: 6mm 0; }
+  .sampul h1 { color: #fff; font-size: 32pt; margin: 2mm 0 0; letter-spacing: .5px; }
+  .sampul .sub { font-size: 14pt; color: #d0d9ea; margin-top: 4mm; max-width: 140mm; }
+  .sampul .kotak { position: absolute; left: 24mm; right: 24mm; bottom: 26mm; border-top: 1px solid rgba(255,255,255,.25); padding-top: 6mm; font-size: 10.5pt; color: #d0d9ea; display: flex; justify-content: space-between; }
+  .sampul .kotak strong { color: #fff; }
+
+  /* Bab */
+  .bab { break-before: page; }
+  .nomor-bab { display: inline-block; background: var(--emas); color: var(--navy); font-weight: 800; border-radius: 6px; padding: 2px 10px; font-size: 10pt; margin-bottom: 6px; }
+  .pengantar { color: var(--redup); font-size: 11pt; margin-bottom: 12px; }
+
+  /* Daftar isi */
+  .daftar-isi { break-after: page; }
+  .daftar-isi ol { list-style: none; padding: 0; }
+  .daftar-isi li { display: flex; align-items: baseline; padding: 7px 0; border-bottom: 1px dotted var(--garis); font-size: 11pt; }
+  .daftar-isi li .n { width: 28px; color: var(--emas); font-weight: 800; }
+  .daftar-isi li .peran { margin-left: auto; font-size: 8.8pt; color: var(--redup); }
+
+  /* Langkah */
+  ol.langkah { list-style: none; padding: 0; counter-reset: langkah; }
+  ol.langkah > li { counter-increment: langkah; position: relative; padding: 2px 0 6px 36px; margin-bottom: 4px; }
+  ol.langkah > li::before { content: counter(langkah); position: absolute; left: 0; top: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 700; font-size: 9.5pt; display: grid; place-items: center; }
+
+  /* Kotak info */
+  .kotak-info { border-radius: 8px; padding: 9px 12px 9px 40px; margin: 10px 0 12px; position: relative; break-inside: avoid; font-size: 10.2pt; }
+  .kotak-info::before { position: absolute; left: 12px; top: 8px; font-size: 13pt; }
+  .kotak-info strong:first-child { display: block; margin-bottom: 2px; }
+  .tips { background: #e8f3ec; border: 1px solid #b9dcc6; } .tips::before { content: "💡"; }
+  .penting { background: #fdecea; border: 1px solid #f1bdb7; } .penting::before { content: "⚠️"; }
+  .catatan { background: #eef3fb; border: 1px solid #c6d6ef; } .catatan::before { content: "ℹ️"; }
+
+  /* Gambar */
+  figure { margin: 10px 0 14px; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid var(--garis); border-radius: 6px; box-shadow: 0 2px 6px rgba(16,24,40,.10); display: block; }
+  figure.sedang img { width: 78%; margin: 0 auto; }
+  figure.kecil img { width: 46%; margin: 0 auto; }
+  figcaption { font-size: 8.8pt; color: var(--redup); text-align: center; margin-top: 5px; }
+  .potong { overflow: hidden; border: 1px solid var(--garis); border-radius: 6px; box-shadow: 0 2px 6px rgba(16,24,40,.10); }
+  .potong img { border: 0; border-radius: 0; box-shadow: none; }
+
+  /* Tabel */
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 9.8pt; break-inside: avoid; }
+  th { background: var(--navy); color: #fff; text-align: left; padding: 6px 8px; font-weight: 600; }
+  td { padding: 6px 8px; border-bottom: 1px solid var(--garis); vertical-align: top; }
+  tr:nth-child(even) td { background: #f7f8fb; }
+  .label { display: inline-block; font-size: 8.4pt; font-weight: 700; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+  .l-merah { background: var(--merah); color: #fff; } .l-oranye { background: #f2a33a; color: #3d2400; }
+  .l-kuning { background: #fff5d6; color: #8a6100; } .l-hijau { background: #e3f4ea; color: var(--hijau); }
+  .dua { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+  .tanya { font-weight: 700; color: var(--navy); margin: 12px 0 2px; break-after: avoid; }
+  .akhir { margin-top: 18px; text-align: center; color: var(--redup); font-size: 9.5pt; }
+</style>
+</head>
+<body>
+
+<!-- ============================ SAMPUL ============================ -->
+<section class="sampul">
+  <img src="lambang-polri.png" alt="Lambang Polri">
+  <div class="alis">Sespim Lemdiklat Polri</div>
+  <div class="garis-emas"></div>
+  <div style="font-size:15pt;color:#d0d9ea">Panduan Penggunaan</div>
+  <h1>ARSIP SESPIMMA</h1>
+  <div class="sub">Arsip digital naskah NKP, NASKAP, dan Policy Brief: cara mencari, membaca, mengunggah, dan mengelola naskah.</div>
+  <div class="kotak">
+    <div>Alamat situs<br><strong>arsip-sespimma.awansurya.com</strong></div>
+    <div style="text-align:right">Untuk serdik, pengunggah, reviewer, dan admin<br><strong>Versi 1 · Oktober 2026</strong></div>
+  </div>
+</section>
+
+<!-- ============================ DAFTAR ISI ============================ -->
+<section class="daftar-isi">
+  <h1>Daftar Isi</h1>
+  <p class="pengantar">Baca bagian 1–4 bila Anda hanya ingin mencari dan membaca naskah. Bagian lainnya untuk petugas.</p>
+  <ol>
+    <li><span class="n">1</span> Mengenal ARSIP SESPIMMA <span class="peran">Semua pengguna</span></li>
+    <li><span class="n">2</span> Masuk ke situs &amp; mengganti kata sandi <span class="peran">Semua pengguna</span></li>
+    <li><span class="n">3</span> Mencari naskah <span class="peran">Semua pengguna</span></li>
+    <li><span class="n">4</span> Membaca naskah <span class="peran">Semua pengguna</span></li>
+    <li><span class="n">5</span> Mengunggah naskah <span class="peran">Pengunggah, Reviewer</span></li>
+    <li><span class="n">6</span> Memeriksa naskah &amp; cek kemiripan <span class="peran">Reviewer</span></li>
+    <li><span class="n">7</span> Impor dari Google Drive <span class="peran">Reviewer, Admin</span></li>
+    <li><span class="n">8</span> Mengelola akun pengguna <span class="peran">Admin</span></li>
+    <li><span class="n">9</span> Aturan penggunaan <span class="peran">Semua pengguna</span></li>
+    <li><span class="n">10</span> Pertanyaan yang sering muncul <span class="peran">Semua pengguna</span></li>
+  </ol>
+</section>
+
+<!-- ============================ 1 ============================ -->
+<section>
+  <span class="nomor-bab">BAGIAN 1</span>
+  <h1>Mengenal ARSIP SESPIMMA</h1>
+  <p class="pengantar">ARSIP SESPIMMA adalah tempat menyimpan dan mencari naskah tugas serdik dari setiap angkatan, sehingga naskah angkatan terdahulu mudah ditemukan tanpa perlu mencari link Google Drive satu per satu.</p>
+
+  <h2>Apa yang bisa dilakukan?</h2>
+  <ul>
+    <li><strong>Mencari sampai ke isi naskah</strong>, bukan hanya judul. Hasil pencarian menunjukkan di halaman berapa kata yang Anda cari muncul.</li>
+    <li><strong>Menyaring</strong> naskah berdasarkan kategori (NKP, NASKAP, Policy Brief), angkatan, tahun, topik, pokjar, dan lokus.</li>
+    <li><strong>Membaca naskah</strong> langsung di browser, tanpa mengunduh.</li>
+    <li><strong>Mengunggah naskah</strong>. Judul, penulis, dan data lain terisi otomatis dari halaman sampul.</li>
+    <li><strong>Memeriksa kemiripan</strong> antarnaskah, termasuk naskah yang hanya mengganti nama tempat (lokus).</li>
+  </ul>
+
+  <h2>Siapa melakukan apa?</h2>
+  <p>Setiap akun memiliki peran. Peran menentukan menu apa saja yang terlihat.</p>
+  <table>
+    <tr><th style="width:22%">Peran</th><th>Yang bisa dilakukan</th></tr>
+    <tr><td><strong>Pembaca</strong><br><span style="color:#5d6678;font-size:9pt">peran umum serdik</span></td><td>Mencari dan membaca naskah yang sudah diterbitkan.</td></tr>
+    <tr><td><strong>Pengunggah</strong></td><td>Semua yang bisa dilakukan Pembaca, ditambah mengunggah naskah. Naskah masuk antrean dan baru terlihat semua orang setelah disetujui Reviewer.</td></tr>
+    <tr><td><strong>Reviewer</strong></td><td>Ditambah: menyetujui atau menolak naskah, melihat hasil cek kemiripan, memperbaiki data naskah, dan mengimpor dari Google Drive.</td></tr>
+    <tr><td><strong>Admin</strong></td><td>Ditambah: membuat akun, mengatur peran, membuka akun yang terkunci, serta mengelola kategori dan angkatan.</td></tr>
+  </table>
+
+  <div class="kotak-info catatan"><strong>Situs tertutup</strong>Semua halaman hanya bisa dibuka setelah masuk (login). Situs tidak muncul di Google, dan setiap pencarian serta pembukaan naskah tercatat.</div>
+</section>
+
+<!-- ============================ 2 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 2</span>
+  <h1>Masuk ke Situs</h1>
+  <p class="pengantar">Anda memerlukan akun dari admin arsip. Username umumnya adalah NRP Anda.</p>
+
+  <h2>Cara masuk</h2>
+  <ol class="langkah">
+    <li>Buka browser (Chrome, Edge, Firefox, atau browser di HP), lalu ketik alamat <strong>https://arsip-sespimma.awansurya.com</strong>.</li>
+    <li>Isi <strong>Username / NRP</strong> dan <strong>Kata sandi</strong> yang diberikan admin.</li>
+    <li>Tekan tombol <strong>Masuk</strong>. Anda akan dibawa ke halaman Beranda.</li>
+  </ol>
+  <figure><img src="gambar/01-login.png"><figcaption>Gambar 2.1 · Halaman masuk</figcaption></figure>
+
+  <div class="kotak-info penting"><strong>Salah kata sandi 5 kali = terkunci 15 menit</strong>Demi keamanan, bila kata sandi salah 5 kali berturut-turut, akun Anda terkunci sementara di perangkat tersebut. Tunggu 15 menit lalu coba lagi, atau minta admin membuka kuncinya.</div>
+  <figure class="sedang"><img src="gambar/14-terkunci.png"><figcaption>Gambar 2.2 · Tampilan saat akun terkunci sementara</figcaption></figure>
+
+  <h2>Mengganti kata sandi</h2>
+  <p>Sebaiknya ganti kata sandi pemberian admin saat pertama kali masuk.</p>
+  <ol class="langkah">
+    <li>Klik <strong>nama Anda</strong> di pojok kanan atas.</li>
+    <li>Isi kata sandi lama, lalu kata sandi baru dua kali.</li>
+    <li>Tekan <strong>Simpan</strong>.</li>
+  </ol>
+  <div class="kotak-info tips"><strong>Kata sandi yang baik</strong>Minimal 8 karakter, bukan angka semua, dan tidak sama dengan NRP atau nama Anda.</div>
+  <p><strong>Lupa kata sandi?</strong> Hubungi admin arsip. Admin akan membuatkan kata sandi baru untuk Anda.</p>
+  <p><strong>Keluar:</strong> tekan tombol <strong>Keluar</strong> di pojok kanan atas, terutama bila memakai komputer bersama.</p>
+</section>
+
+<!-- ============================ 3 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 3</span>
+  <h1>Mencari Naskah</h1>
+  <p class="pengantar">Ketik kata kunci di kotak pencarian, seperti mencari di Google. Sistem mencari di judul, nama penulis, lokus, kata kunci, abstrak, dan <strong>isi setiap halaman naskah</strong>.</p>
+
+  <figure><img src="gambar/02-beranda.png"><figcaption>Gambar 3.1 · Beranda: kotak pencarian, jumlah naskah per kategori dan angkatan, serta naskah terbaru</figcaption></figure>
+
+  <h2>Cara mencari</h2>
+  <ol class="langkah">
+    <li>Ketik kata kunci di kotak pencarian, misalnya <code>patroli dialogis</code>, lalu tekan <strong>Cari</strong> atau Enter.</li>
+    <li>Perhatikan daftar hasil. Setiap hasil menampilkan kategori, angkatan, judul, penulis, lokus, dan <strong>cuplikan teks</strong> dengan kata yang dicari diberi warna kuning.</li>
+    <li>Tulisan <strong>“Hlm 3”</strong> di depan cuplikan berarti kata tersebut ada di halaman 3. Klik cuplikannya untuk langsung membuka halaman itu.</li>
+  </ol>
+  <figure><img src="gambar/03-cari.png"><figcaption>Gambar 3.2 · Hasil pencarian beserta cuplikan dan nomor halaman</figcaption></figure>
+
+  <h2>Tips agar hasil lebih tepat</h2>
+  <table>
+    <tr><th style="width:34%">Anda menulis</th><th>Hasilnya</th></tr>
+    <tr><td><code>konflik sosial</code></td><td>Naskah yang memuat <strong>kedua</strong> kata tersebut (urutannya bebas).</td></tr>
+    <tr><td><code>"restorative justice"</code></td><td>Kata harus <strong>berurutan persis</strong> seperti di dalam tanda kutip.</td></tr>
+    <tr><td><code>pengawasan -narkoba</code></td><td>Naskah tentang pengawasan, <strong>kecuali</strong> yang menyebut narkoba.</td></tr>
+    <tr><td><code>menangani</code></td><td>Kata berimbuhan dikenali otomatis: juga menemukan <em>penanganan</em> dan <em>ditangani</em>.</td></tr>
+    <tr><td><code>narkotika</code></td><td>Singkatan dan sinonim dikenali: juga menemukan <em>narkoba</em>. Begitu pula <em>pungli</em> = <em>pungutan liar</em>, <em>polres</em> = <em>kepolisian resor</em>.</td></tr>
+  </table>
+  <div class="kotak-info catatan"><strong>Tidak ada naskah yang memuat semua kata?</strong>Sistem otomatis menampilkan naskah yang memuat <em>sebagian</em> kata, dan memberi tahu Anda dengan kotak biru di atas hasil.</div>
+
+  <h2>Menyaring dan mengurutkan</h2>
+  <p>Di sebelah kiri hasil ada kotak <strong>Saring</strong>. Pilih kategori, angkatan, tahun, topik, pokjar, atau ketik sebagian nama lokus (misalnya <em>Polda Papua</em>), lalu tekan <strong>Terapkan</strong>. Pilihan <strong>Urutkan</strong> di kanan atas mengatur urutan hasil: paling relevan, terbaru, judul A–Z, angkatan, atau penulis.</p>
+  <figure><img src="gambar/04-jelajah-saring.png"><figcaption>Gambar 3.3 · Menjelajah semua Policy Brief, diurutkan berdasarkan judul</figcaption></figure>
+  <div class="kotak-info tips"><strong>Menjelajah tanpa kata kunci</strong>Kosongkan kotak pencarian lalu pilih saringan, misalnya Angkatan 76, untuk melihat semua naskah angkatan itu. Di Beranda, Anda juga bisa langsung mengklik kotak kategori atau angkatan.</div>
+</section>
+
+<!-- ============================ 4 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 4</span>
+  <h1>Membaca Naskah</h1>
+  <p class="pengantar">Klik judul naskah di hasil pencarian untuk membuka halaman detailnya.</p>
+  <figure><img src="gambar/05-detail.png"><figcaption>Gambar 4.1 · Halaman detail: data naskah di kiri, PDF di kanan</figcaption></figure>
+
+  <h2>Isi halaman detail</h2>
+  <ul>
+    <li><strong>Kolom kiri</strong> berisi penulis, topik, pokjar, lokus, kata kunci, dan jumlah halaman. Klik <em>topik</em> atau <em>pokjar</em> untuk melihat naskah lain dengan topik atau pokjar yang sama.</li>
+    <li>Bila Anda datang dari pencarian, kotak <strong>“… di dokumen ini”</strong> menampilkan semua halaman yang memuat kata tersebut. Klik salah satunya untuk melompat ke halaman itu.</li>
+    <li><strong>Kolom kanan</strong> menampilkan PDF naskah. Gulir atau gunakan tombol +/– untuk memperbesar.</li>
+    <li>Tombol <strong>Buka PDF di tab baru</strong> menampilkan naskah layar penuh.</li>
+  </ul>
+
+  <h2>Watermark nama pembaca</h2>
+  <div class="dua" style="grid-template-columns: 1.15fr .85fr">
+    <div>
+      <p>Setiap PDF yang dibuka otomatis diberi tanda air (watermark) di <strong>setiap halaman</strong>:</p>
+      <ul>
+        <li><strong>Nama dan NRP pembaca</strong>, ditulis miring di tengah halaman.</li>
+        <li>Di bagian bawah halaman: <em>“Diakses oleh … pada tanggal … jam …”</em>.</li>
+      </ul>
+      <p>Watermark dibuat khusus untuk setiap orang yang membuka, sehingga dua orang yang membuka naskah yang sama akan melihat nama masing-masing.</p>
+      <div class="kotak-info penting"><strong>Jangan menyebarluaskan naskah</strong>Naskah hanya untuk keperluan pendidikan. Watermark dan catatan akses membuat setiap salinan yang tersebar dapat dilacak ke akun pembacanya.</div>
+    </div>
+    <figure style="margin:0"><img src="gambar/06-pdf-watermark.png"><figcaption>Gambar 4.2 · Halaman PDF yang dibuka oleh pengguna “Joko Prasetyo”</figcaption></figure>
+  </div>
+
+  <h2>Membuka dari HP</h2>
+  <div class="dua">
+    <div>
+      <p>Situs dapat dibuka dari browser HP. Menu ada di bagian atas dan dapat digeser ke kiri atau kanan. Kotak saringan tampil ringkas di atas hasil.</p>
+      <p>Di HP, PDF biasanya tidak tampil di dalam halaman. Tekan <strong>Buka PDF di tab baru</strong> untuk membacanya.</p>
+    </div>
+    <figure class="kecil" style="margin:0"><img src="gambar/20-hp-cari.png" style="width:72%"><figcaption>Gambar 4.3 · Tampilan di HP</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============================ 5 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 5</span>
+  <h1>Mengunggah Naskah</h1>
+  <p class="pengantar">Untuk akun berperan Pengunggah atau Reviewer. Menu <strong>Unggah</strong> ada di bagian atas.</p>
+
+  <div class="dua">
+    <div>
+      <h2 style="margin-top:0">Langkah mengunggah</h2>
+      <ol class="langkah">
+        <li>Klik menu <strong>Unggah</strong>.</li>
+        <li>Pada <strong>File PDF</strong>, pilih naskah Anda. Hanya PDF, maksimal <strong>6 MB</strong>.</li>
+        <li>Pilih <strong>Kategori</strong> (NKP / NASKAP / Policy Brief) dan <strong>Angkatan</strong>.</li>
+        <li>Kolom lain <strong>boleh dikosongkan</strong>. Judul, topik, penulis, NRP, nomor serdik, pokjar, lokus, abstrak, dan kata kunci akan terisi otomatis dari halaman sampul.</li>
+        <li>Tekan tombol <strong>Unggah</strong>.</li>
+      </ol>
+      <div class="kotak-info tips"><strong>Isian otomatis tidak tepat?</strong>Isi kolomnya sendiri sebelum menekan Unggah. Isian Anda tidak akan ditimpa sistem.</div>
+    </div>
+    <figure style="margin-top:4px"><div class="potong" style="height:132mm"><img src="gambar/07-unggah.png"></div><figcaption>Gambar 5.1 · Formulir unggah</figcaption></figure>
+  </div>
+
+  <h2>Setelah diunggah</h2>
+  <ul>
+    <li>Naskah dari Pengunggah berstatus <span class="label l-kuning">Menunggu review</span> dan <strong>belum terlihat</strong> oleh pembaca lain sampai disetujui Reviewer.</li>
+    <li>Pantau statusnya di menu <strong>Unggahan Saya</strong>. Bila ditolak, alasan penolakan dari Reviewer tampil di sana.</li>
+    <li>Reviewer yang mengunggah dapat mencentang <em>Langsung terbitkan</em> agar naskah langsung terlihat.</li>
+  </ul>
+  <figure><img src="gambar/07b-unggahan-saya.png"><figcaption>Gambar 5.2 · Menu Unggahan Saya</figcaption></figure>
+
+  <h2>Pesan yang mungkin muncul</h2>
+  <table>
+    <tr><th style="width:40%">Pesan</th><th>Artinya &amp; yang perlu dilakukan</th></tr>
+    <tr><td>Ukuran file maksimal 6 MB</td><td>File terlalu besar. Perkecil PDF (misalnya “Save as PDF” ulang dari Word dengan kualitas standar), atau minta Reviewer mengimpornya lewat Google Drive.</td></tr>
+    <tr><td>File yang sama persis sudah ada di arsip</td><td>Naskah ini sudah pernah diunggah. Tidak perlu diunggah lagi.</td></tr>
+    <tr><td>Judul/penulis tidak terbaca dari sampul</td><td>Halaman sampul tidak memakai format baku. Isi kolom Judul dan Penulis secara manual.</td></tr>
+    <tr><td>PDF hasil scan, sedang dibaca dengan OCR</td><td>Naskah berupa hasil scan (gambar). Sistem membaca teksnya otomatis di latar belakang dalam beberapa menit, setelah itu isinya bisa dicari.</td></tr>
+  </table>
+</section>
+
+<!-- ============================ 6 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 6</span>
+  <h1>Memeriksa Naskah &amp; Cek Kemiripan</h1>
+  <p class="pengantar">Untuk Reviewer. Setiap naskah yang masuk otomatis dibandingkan dengan seluruh isi arsip.</p>
+
+  <h2>Antrean review</h2>
+  <p>Menu <strong>Review</strong> (dengan angka jumlah antrean) menampilkan naskah yang menunggu keputusan, lengkap dengan <strong>kemiripan tertinggi</strong> terhadap naskah lain.</p>
+  <figure><img src="gambar/08-review.png"><figcaption>Gambar 6.1 · Antrean review: naskah pertama 95% mirip dengan naskah angkatan sebelumnya</figcaption></figure>
+
+  <h2>Arti tingkat kemiripan</h2>
+  <table>
+    <tr><th style="width:30%">Label</th><th>Artinya</th></tr>
+    <tr><td><span class="label l-merah">40% ke atas · Sangat mirip</span></td><td>Sebagian besar isi sama dengan naskah lain. <strong>Wajib diperiksa</strong> lewat laporan perbandingan.</td></tr>
+    <tr><td><span class="label l-oranye">20–39% · Perlu diperiksa</span></td><td>Ada bagian cukup panjang yang sama. Periksa apakah itu kutipan wajar atau salinan.</td></tr>
+    <tr><td><span class="label l-kuning">8–19% · Mirip sebagian</span></td><td>Beberapa bagian sama, sering karena mengutip peraturan atau sumber yang sama.</td></tr>
+    <tr><td><span class="label l-hijau">di bawah 8% · Wajar</span></td><td>Tidak ada indikasi salinan.</td></tr>
+  </table>
+  <div class="kotak-info catatan"><strong>Bagaimana sistem mendeteksi “ganti lokus”?</strong>Sebelum dibandingkan, nama tempat atau satuan (misalnya <em>Polres Bukit Hijau</em>) dan angka disamarkan. Naskah yang hanya mengganti lokus atau tahun tetap terdeteksi sama. Teks baku yang dipakai semua orang (sampul, surat pernyataan, kalimat topik) diabaikan.</div>
+  <div class="kotak-info penting"><strong>Hasil adalah petunjuk, bukan vonis</strong>Selalu buka laporan perbandingan dan nilai sendiri sebelum menolak naskah.</div>
+
+  <h2>Laporan perbandingan</h2>
+  <p>Klik <strong>Bandingkan</strong> (di menu <em>Kemiripan</em> atau di kartu kemiripan pada halaman naskah). Laporan menampilkan:</p>
+  <ul>
+    <li>Persentase dua arah: berapa persen isi naskah A ada di naskah B, dan sebaliknya.</li>
+    <li><strong>Contoh penggantian</strong>, misalnya <em>BUKIT HIJAU → LEMBAH DAMAI</em>.</li>
+    <li>Bagian yang sama, <strong>berdampingan per halaman</strong>, dengan kata yang berbeda diberi warna merah muda.</li>
+  </ul>
+  <figure><img src="gambar/11-banding.png"><figcaption>Gambar 6.2 · Laporan perbandingan dua naskah</figcaption></figure>
+  <figure><img src="gambar/10-kemiripan.png"><figcaption>Gambar 6.3 · Menu Kemiripan: daftar semua pasangan naskah yang mirip</figcaption></figure>
+
+  <h2>Menyetujui atau menolak</h2>
+  <ol class="langkah">
+    <li>Di antrean review, klik <strong>Periksa</strong> pada naskah.</li>
+    <li>Baca naskahnya dan lihat kartu <strong>Kemiripan dengan naskah lain</strong>.</li>
+    <li>Pada kartu <strong>Review</strong>, klik <strong>Setujui &amp; terbitkan</strong> atau <strong>Tolak</strong>. Penolakan wajib disertai catatan alasan, yang akan dibaca pengunggah.</li>
+  </ol>
+  <figure><div class="potong" style="height:118mm"><img src="gambar/09-detail-review.png"></div><figcaption>Gambar 6.4 · Halaman naskah bagi Reviewer: kartu kemiripan dan kartu review</figcaption></figure>
+
+  <h2>Memperbaiki data naskah</h2>
+  <p>Bila judul, penulis, lokus, atau data lain keliru, buka naskahnya lalu klik <strong>Ubah metadata</strong>, perbaiki, dan tekan <strong>Simpan</strong>. Perubahan langsung dipakai dalam pencarian.</p>
+  <figure class="sedang"><div class="potong" style="height:92mm"><img src="gambar/15-ubah-metadata.png"></div><figcaption>Gambar 6.5 · Formulir ubah metadata</figcaption></figure>
+</section>
+
+<!-- ============================ 7 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 7</span>
+  <h1>Impor dari Google Drive</h1>
+  <p class="pengantar">Untuk Reviewer dan Admin. Cara tercepat memasukkan satu folder pengumpulan tugas sekaligus, misalnya seluruh NKP satu angkatan.</p>
+
+  <h2>Sebelum mulai</h2>
+  <div class="kotak-info penting"><strong>Folder harus dapat dibuka dengan link</strong>Di Google Drive, klik kanan folder → <em>Bagikan</em> → bagian <em>Akses umum</em> pilih <strong>“Siapa saja yang memiliki link”</strong>. Folder yang hanya dibagikan ke email tertentu tidak bisa dibaca sistem.</div>
+
+  <h2>Langkah impor</h2>
+  <ol class="langkah">
+    <li>Klik menu <strong>Impor Drive</strong>.</li>
+    <li>Tempel <strong>link folder</strong> Google Drive. Subfolder per serdik ikut terbaca.</li>
+    <li>Kolom kategori, nomor angkatan, dan tahun <strong>biasanya dikosongkan</strong>. Sistem membacanya dari sampul. Isi hanya bila sampul angkatan tersebut tidak mencantumkannya.</li>
+    <li>Centang <strong>Langsung terbitkan</strong> bila naskah tidak perlu melewati antrean review.</li>
+    <li>Tekan <strong>Mulai impor</strong>. Bilah kemajuan muncul. Halaman boleh ditutup, proses tetap berjalan.</li>
+  </ol>
+  <figure><div class="potong" style="height:112mm"><img src="gambar/12-impor.png"></div><figcaption>Gambar 7.1 · Formulir Impor dari Google Drive dan riwayat impor</figcaption></figure>
+
+  <h2>Membaca hasil impor</h2>
+  <table>
+    <tr><th style="width:22%">Status</th><th>Artinya</th></tr>
+    <tr><td><span class="label l-hijau">Masuk</span></td><td>Naskah berhasil disimpan ke arsip.</td></tr>
+    <tr><td><strong>Sudah ada</strong></td><td>File yang sama persis sudah ada di arsip, sehingga dilewati. Aman bila impor diulang.</td></tr>
+    <tr><td><span class="label l-kuning">Dilewati</span></td><td>Serdik hanya mengunggah file Word, tanpa PDF. Minta versi PDF-nya.</td></tr>
+    <tr><td><span class="label l-merah">Gagal</span></td><td>File rusak, atau kategori/angkatan tidak terbaca. Keterangannya ada di kolom paling kanan.</td></tr>
+  </table>
+  <div class="kotak-info tips"><strong>Batas 6 MB tidak berlaku di sini</strong>Naskah yang tebal atau hasil scan tetap bisa masuk lewat impor Google Drive.</div>
+</section>
+
+<!-- ============================ 8 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 8</span>
+  <h1>Mengelola Akun Pengguna</h1>
+  <p class="pengantar">Untuk Admin. Semua pengaturan akun ada di menu <strong>Panel Admin</strong>.</p>
+  <figure><img src="gambar/16-admin.png"><figcaption>Gambar 8.1 · Panel Admin</figcaption></figure>
+
+  <h2>Membuat akun baru</h2>
+  <ol class="langkah">
+    <li>Di Panel Admin, pada baris <strong>Pengguna</strong>, klik <strong>+ Tambah</strong>.</li>
+    <li>Isi <strong>Nama pengguna</strong> dengan NRP, lalu kata sandi awal dua kali. Tekan <strong>Simpan dan terus mengedit</strong>.</li>
+    <li>Di halaman berikutnya, isi nama depan dan nama belakang. Nama ini tampil di watermark PDF.</li>
+    <li>Atur <strong>Grup</strong> (peran), lihat bagian berikut, lalu tekan <strong>Simpan</strong>.</li>
+    <li>Berikan NRP dan kata sandi awal kepada pengguna secara pribadi, dan minta ia segera menggantinya.</li>
+  </ol>
+  <figure><img src="gambar/17-admin-tambah-pengguna.png"><figcaption>Gambar 8.2 · Menambah pengguna</figcaption></figure>
+
+  <h2>Mengatur peran</h2>
+  <p>Pada halaman pengguna, bagian <strong>Grup</strong>, pindahkan grup dari kotak kiri ke kanan:</p>
+  <table>
+    <tr><th style="width:30%">Grup</th><th>Peran</th></tr>
+    <tr><td><em>(tanpa grup)</em></td><td>Pembaca: hanya mencari dan membaca.</td></tr>
+    <tr><td>Pengunggah</td><td>Bisa mengunggah naskah.</td></tr>
+    <tr><td>Reviewer</td><td>Review, kemiripan, ubah metadata, impor Drive.</td></tr>
+    <tr><td>Admin Arsip</td><td>Mengelola akun, kategori, angkatan. Centang juga <strong>Status staf</strong> agar bisa membuka Panel Admin.</td></tr>
+  </table>
+  <figure><img src="gambar/18-admin-peran.png"><figcaption>Gambar 8.3 · Memilih grup (peran) untuk pengguna</figcaption></figure>
+  <div class="kotak-info catatan"><strong>Menonaktifkan akun</strong>Untuk pengguna yang tidak lagi berhak (misalnya sudah lulus lama), hapus centang <strong>Aktif</strong> di halaman penggunanya, bukan menghapus akunnya, agar catatan aksesnya tetap tersimpan.</div>
+
+  <h2>Mereset kata sandi yang lupa</h2>
+  <ol class="langkah">
+    <li>Panel Admin → <strong>Pengguna</strong> → klik NRP pengguna.</li>
+    <li>Di bawah kolom kata sandi, klik <strong>Setel kembali sandi</strong>, isi kata sandi baru dua kali, lalu tekan <strong>Ganti sandi</strong>.</li>
+  </ol>
+
+  <h2>Membuka akun yang terkunci</h2>
+  <p>Bila pengguna tidak bisa menunggu 15 menit: Panel Admin → bagian <strong>Axes</strong> → <strong>Upaya akses</strong> (Access attempts) → centang baris berisi NRP pengguna → pilih aksi <strong>Hapus</strong> → <strong>Buka</strong>.</p>
+  <figure><img src="gambar/19-admin-buka-kunci.png"><figcaption>Gambar 8.4 · Daftar percobaan masuk yang gagal (untuk membuka kunci)</figcaption></figure>
+
+  <h2>Menambah kategori atau angkatan</h2>
+  <p>Panel Admin → <strong>Kategori</strong> atau <strong>Angkatan</strong> → <strong>+ Tambah</strong>. Kategori baru (misalnya jenis naskah lain) langsung muncul di formulir unggah dan saringan pencarian. Angkatan baru juga dibuat otomatis saat impor bila sampul mencantumkannya.</p>
+</section>
+
+<!-- ============================ 9 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 9</span>
+  <h1>Aturan Penggunaan</h1>
+  <p class="pengantar">Arsip ini berisi karya tulis rekan-rekan serdik. Gunakan dengan bertanggung jawab.</p>
+  <ol class="langkah">
+    <li><strong>Untuk belajar, bukan menyalin.</strong> Naskah terdahulu dipakai sebagai referensi dan bahan perbandingan. Menyalin isi naskah lain lalu mengganti lokus akan <strong>terdeteksi otomatis</strong> oleh cek kemiripan.</li>
+    <li><strong>Jangan menyebarluaskan</strong> naskah ke luar, baik dalam bentuk file, tangkapan layar, maupun cetakan. Setiap PDF memuat nama dan NRP Anda.</li>
+    <li><strong>Jaga akun Anda.</strong> Jangan meminjamkan username dan kata sandi kepada orang lain. Semua aktivitas tercatat atas nama pemilik akun.</li>
+    <li><strong>Kutip dengan benar.</strong> Bila memakai gagasan dari naskah terdahulu, cantumkan sumbernya di naskah Anda.</li>
+    <li><strong>Laporkan</strong> data yang keliru (judul, nama, lokus) kepada Reviewer agar diperbaiki.</li>
+  </ol>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section class="bab">
+  <span class="nomor-bab">BAGIAN 10</span>
+  <h1>Pertanyaan yang Sering Muncul</h1>
+
+  <p class="tanya">Saya tidak bisa masuk, padahal kata sandi sudah benar.</p>
+  <p>Pastikan tidak ada huruf kapital yang tidak sengaja (tombol Caps Lock). Bila muncul tulisan “Terlalu banyak percobaan masuk”, tunggu 15 menit atau minta admin membuka kunci.</p>
+
+  <p class="tanya">Naskah yang saya unggah tidak muncul di pencarian.</p>
+  <p>Naskah dari Pengunggah baru muncul setelah disetujui Reviewer. Cek statusnya di menu <strong>Unggahan Saya</strong>.</p>
+
+  <p class="tanya">Naskah saya ditolak. Apa yang harus dilakukan?</p>
+  <p>Baca catatan penolakan di menu <strong>Unggahan Saya</strong>, perbaiki naskah, lalu unggah kembali.</p>
+
+  <p class="tanya">Pencarian tidak menemukan naskah yang saya tahu ada.</p>
+  <p>Coba kata yang lebih umum atau lebih sedikit kata, dan hapus saringan. Bila naskah tersebut hasil scan dan baru diunggah, tunggu beberapa menit sampai proses OCR selesai.</p>
+
+  <p class="tanya">PDF tidak tampil di halaman naskah.</p>
+  <p>Tekan tombol <strong>Buka PDF di tab baru</strong>. Ini wajar di HP dan beberapa browser.</p>
+
+  <p class="tanya">Bolehkah saya mengunduh PDF?</p>
+  <p>Secara bawaan, hanya admin yang memiliki tombol Unduh. Pembaca cukup membaca di browser.</p>
+
+  <p class="tanya">Data naskah saya (nama, lokus, judul) salah.</p>
+  <p>Hubungi Reviewer. Reviewer dapat memperbaikinya melalui tombol <strong>Ubah metadata</strong>.</p>
+
+  <p class="tanya">Siapa yang bisa melihat bahwa saya membuka sebuah naskah?</p>
+  <p>Admin dapat melihat catatan akses (siapa membuka apa dan kapan) untuk keperluan keamanan arsip.</p>
+
+  <div class="kotak-info catatan" style="margin-top:18px"><strong>Butuh bantuan lebih lanjut?</strong>Hubungi admin ARSIP SESPIMMA: ________________________________ (nama / no. HP)</div>
+  <div class="akhir">ARSIP SESPIMMA · Sespim Lemdiklat Polri · Panduan Penggunaan Versi 1, Oktober 2026</div>
+</section>
+
+</body>
+</html>

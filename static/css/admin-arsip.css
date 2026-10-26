@@ -66,17 +66,18 @@ html[data-theme="light"] {
 }
 .nav-arsip {
   display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
+  gap: 2px;
+  flex-wrap: nowrap;
 }
 .nav-arsip a,
 .nav-arsip a:link,
 .nav-arsip a:visited {
   color: #d8e0ee;
   text-decoration: none;
-  padding: 6px 10px;
+  padding: 6px 8px;
   border-radius: 6px;
-  font-size: 0.93rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 .nav-arsip a:hover,
 .nav-arsip a.aktif {
