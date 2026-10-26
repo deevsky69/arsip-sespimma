@@ -34,9 +34,9 @@ class Command(BaseCommand):
         else:
             self.cek(not settings.SECRET_KEY.startswith("dev-only"), "Mode produksi, DJANGO_SECRET_KEY diisi",
                      "DJANGO_SECRET_KEY masih kunci pengembangan")
-            self.cek(all(h not in ("localhost", "127.0.0.1") for h in settings.ALLOWED_HOSTS),
-                     f"Domain: {', '.join(settings.ALLOWED_HOSTS)}",
-                     "DJANGO_ALLOWED_HOSTS belum diisi domain situs", serius=False)
+            domain = [h for h in settings.ALLOWED_HOSTS if "." in h and not h.replace(".", "").isdigit()]
+            self.cek(bool(domain), f"Domain: {', '.join(domain)}", "DJANGO_ALLOWED_HOSTS belum diisi domain situs",
+                     serius=False)
             self.cek(bool(settings.CSRF_TRUSTED_ORIGINS), "DJANGO_CSRF_TRUSTED_ORIGINS diisi",
                      "DJANGO_CSRF_TRUSTED_ORIGINS kosong: form login akan ditolak lewat HTTPS")
 
