@@ -18,6 +18,9 @@ Perkiraan waktu: 1–2 jam (sebagian besar menunggu unduhan/instalasi).
 
 > Lakukan pemindahan saat tidak ada yang sedang mengunggah, supaya tidak ada dokumen yang tertinggal di laptop.
 
+> **Server sudah dipakai situs lain dengan nginx** (port 80/443 terpakai)? Jangan pakai Caddy dan jangan
+> menjalankan `ufw` sembarangan. Ikuti bagian **[Server bersama nginx](#server-bersama-nginx)** di bawah.
+
 ---
 
 ## 1. Amankan VPS
@@ -27,6 +30,8 @@ Login ke VPS (`ssh root@IP-VPS`), lalu:
 ```bash
 apt update && apt upgrade -y
 adduser arsip && usermod -aG sudo arsip        # akun harian, jangan pakai root terus
+# PERHATIAN: bila SSH tidak di port 22, ganti 'OpenSSH' dengan port SSH Anda (mis. 'ufw allow 8998/tcp'),
+# kalau tidak Anda akan terkunci dari server begitu ufw aktif.
 ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw enable
 ```
 
@@ -170,3 +175,31 @@ docker compose exec app python manage.py periksa_sistem
 | OCR tidak jalan | `docker compose exec app tail -50 /data/ocr.log`; ulangi dengan `docker compose exec app python manage.py jalankan_ocr` |
 | Impor Drive gagal | `docker compose exec app tail -50 /data/impor.log`; Google kadang membatasi unduhan dari server, coba lagi beberapa jam kemudian atau unduh manual dan pakai `impor_pdf` |
 | Memulihkan dari cadangan | `docker compose down`, salin `data/cadangan/database/arsip-<terbaru>.sqlite3` menjadi `data/arsip.sqlite3` dan folder `data/cadangan/berkas` menjadi `data/berkas`, lalu `docker compose up -d` |
+
+---
+
+## Server bersama nginx
+
+Untuk server yang sudah menjalankan nginx untuk situs lain. Situs lain **tidak diubah**: hanya ditambah
+satu file konfigurasi nginx untuk domain arsip, dan aplikasi hanya mendengarkan di `127.0.0.1`.
+
+Ganti langkah 6–7 di atas dengan:
+
+```bash
+cd /srv/arsip
+sudo chown -R 1000:1000 data
+docker compose -f docker-compose.nginx.yml build
+docker compose -f docker-compose.nginx.yml run --rm app python manage.py impor_data /data/paket-arsip.zip
+docker compose -f docker-compose.nginx.yml up -d
+curl -sI http://127.0.0.1:8010/akun/login/            # harus HTTP 200
+
+sudo cp deploy/nginx-arsip-sespimma.conf /etc/nginx/sites-available/arsip-sespimma
+sudo ln -s /etc/nginx/sites-available/arsip-sespimma /etc/nginx/sites-enabled/arsip-sespimma
+sudo nginx -t && sudo systemctl reload nginx           # reload tidak memutus situs lain
+sudo certbot --nginx -d arsip-sespimma.awansurya.com   # HTTPS; hanya mengubah file arsip-sespimma
+docker compose -f docker-compose.nginx.yml exec app python manage.py periksa_sistem
+```
+
+Bila port 8010 sudah dipakai aplikasi lain, isi `ARSIP_PORT_LOKAL=<port lain>` di `.env` dan ganti angka
+`8010` di file nginx. Untuk semua perintah lain di panduan ini, tambahkan `-f docker-compose.nginx.yml`
+setelah `docker compose`.
