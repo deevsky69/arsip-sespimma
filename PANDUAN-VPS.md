@@ -203,3 +203,27 @@ docker compose -f docker-compose.nginx.yml exec app python manage.py periksa_sis
 Bila port 8010 sudah dipakai aplikasi lain, isi `ARSIP_PORT_LOKAL=<port lain>` di `.env` dan ganti angka
 `8010` di file nginx. Untuk semua perintah lain di panduan ini, tambahkan `-f docker-compose.nginx.yml`
 setelah `docker compose`.
+
+---
+
+## Pemasangan yang berjalan sekarang (Oktober 2026)
+
+| | |
+|---|---|
+| Alamat | https://arsip-sespimma.awansurya.com |
+| Server | `arsip-sespimma` (Ubuntu 22.04, IP lokal 192.168.111.247), SSH: `ssh arsip-vps` dari laptop (= `ssh -p 8998 surya@202.56.161.114`) |
+| HTTPS | diurus **reverse proxy di router** (sertifikat Let's Encrypt ada di router); aplikasi melayani HTTP di port 80 |
+| Menjalankan | `docker compose -f docker-compose.nginx.yml ...` di `/srv/arsip` (`.env`: `ARSIP_BIND=0.0.0.0`, `ARSIP_PORT_LOKAL=80`) |
+| Kode | `/srv/arsip` adalah repositori git yang menerima push langsung dari laptop (`git push server main`) |
+| Cadangan di server | cron akun `surya` pukul 02.00 → `/srv/arsip/data/cadangan` (14 terakhir) |
+| Cadangan di luar server | Task Scheduler laptop `ArsipSespimma-TarikCadangan` pukul 21.00 → `OneDrive\ArsipSespimma-cadangan-server` (7 paket terakhir) |
+
+**Memperbarui aplikasi** (dari laptop, setelah perubahan di-commit):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\perbarui_server.ps1
+```
+
+Kebutuhan di reverse proxy router untuk domain ini: teruskan ke `http://192.168.111.247:80`, kirim header
+`Host`, `X-Forwarded-For`, `X-Forwarded-Proto`, `client_max_body_size 60m`, `proxy_read_timeout 180s`,
+dan alihkan `http://` ke `https://`.
