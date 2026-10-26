@@ -72,6 +72,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "arsip.middleware.WajibLoginMiddleware",
+    "arsip.middleware.WajibGantiSandiMiddleware",
     "axes.middleware.AxesMiddleware",  # harus paling akhir
 ]
 

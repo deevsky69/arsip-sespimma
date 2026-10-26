@@ -19,6 +19,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from arsip.csvutil import baca_csv, tulis_csv
+from arsip.models import WajibGantiSandi
 
 PERAN = {
     "pembaca": [],
@@ -68,6 +69,7 @@ class Command(BaseCommand):
             u = User.objects.create_user(
                 username=nrp, password=sandi, email=b.get("email", ""), first_name=depan[:150], last_name=belakang[:150]
             )
+            WajibGantiSandi.objects.create(pengguna=u)  # sandi awal harus diganti saat login pertama
             if peran == "admin":
                 u.is_staff = True
                 u.save(update_fields=["is_staff"])

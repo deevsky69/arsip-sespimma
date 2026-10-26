@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.utils.html import format_html
 
 from . import layanan, pdf
-from .models import Angkatan, Dokumen, HalamanDokumen, Kategori, LogAkses, TugasImpor, hitung_sha256
+from .models import Angkatan, Dokumen, HalamanDokumen, Kategori, LogAkses, TugasImpor, WajibGantiSandi, hitung_sha256
 
 
 @admin.register(Kategori)
@@ -182,3 +182,36 @@ class TugasImporAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+
+@admin.register(WajibGantiSandi)
+class WajibGantiSandiAdmin(admin.ModelAdmin):
+    list_display = ["pengguna", "nama", "dibuat"]
+    search_fields = ["pengguna__username", "pengguna__first_name"]
+    autocomplete_fields = ["pengguna"]
+
+    @admin.display(description="Nama")
+    def nama(self, obj):
+        return obj.pengguna.get_full_name()
+
+
+# Tambahkan aksi "wajib ganti kata sandi" pada daftar Pengguna bawaan Django.
+from django.contrib.auth import get_user_model  # noqa: E402
+from django.contrib.auth.admin import UserAdmin  # noqa: E402
+
+_User = get_user_model()
+admin.site.unregister(_User)
+
+
+@admin.register(_User)
+class PenggunaAdmin(UserAdmin):
+    actions = ["wajibkan_ganti_sandi"]
+    list_display = ["username", "first_name", "last_name", "is_staff", "is_active", "last_login"]
+
+    @admin.action(description="Wajibkan ganti kata sandi saat login berikutnya", permissions=["change"])
+    def wajibkan_ganti_sandi(self, request, queryset):
+        n = 0
+        for u in queryset:
+            _, baru = WajibGantiSandi.objects.get_or_create(pengguna=u)
+            n += baru
+        self.message_user(request, f"{n} pengguna wajib mengganti kata sandi saat login berikutnya.")

@@ -1170,3 +1170,81 @@ class BatasUnggahTest(DasarTest):
         )
         self.assertContains(r, "Ukuran file maksimal 6 MB")
         self.assertEqual(Dokumen.objects.count(), 0)
+
+
+class WajibGantiSandiTest(DasarTest):
+    def setUp(self):
+        super().setUp()
+        from .models import WajibGantiSandi
+
+        self.pembaca.set_password("qwerty123")
+        self.pembaca.save()
+        WajibGantiSandi.objects.create(pengguna=self.pembaca)
+
+    def test_diarahkan_ke_ganti_sandi_sampai_diganti(self):
+        from .models import WajibGantiSandi
+
+        self.client.post("/akun/login/", {"username": "80010001", "password": "qwerty123"})
+        for url in ["/", "/cari/?q=x", "/unggahan-saya/"]:
+            self.assertRedirects(self.client.get(url), "/akun/ganti-sandi/", fetch_redirect_response=False)
+        r = self.client.get("/akun/ganti-sandi/")
+        self.assertContains(r, "masih memakai kata sandi awal")
+        # sandi umum ditolak
+        r = self.client.post("/akun/ganti-sandi/", {"old_password": "qwerty123", "new_password1": "qwerty123", "new_password2": "qwerty123"})
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(WajibGantiSandi.objects.filter(pengguna=self.pembaca).exists())
+        # sandi kuat diterima -> kewajiban hilang, situs bisa dipakai
+        baru = "Bhayangkara-Presisi-2026"
+        r = self.client.post("/akun/ganti-sandi/", {"old_password": "qwerty123", "new_password1": baru, "new_password2": baru})
+        self.assertRedirects(r, "/", fetch_redirect_response=False)
+        self.assertFalse(WajibGantiSandi.objects.filter(pengguna=self.pembaca).exists())
+        self.assertEqual(self.client.get("/").status_code, 200)
+        self.pembaca.refresh_from_db()
+        self.assertTrue(self.pembaca.check_password(baru))
+
+    def test_logout_tetap_bisa(self):
+        self.client.force_login(self.pembaca)
+        self.assertRedirects(self.client.post("/akun/logout/"), "/akun/login/", fetch_redirect_response=False)
+
+    def test_aksi_admin_wajibkan_ganti_sandi(self):
+        from .models import WajibGantiSandi
+
+        admin = User.objects.create_superuser("admin", password="rahasia-123")
+        self.client.force_login(admin)
+        r = self.client.post(reverse("admin:auth_user_changelist"),
+                             {"action": "wajibkan_ganti_sandi", "_selected_action": [self.reviewer.pk]})
+        self.assertEqual(r.status_code, 302)
+        self.assertTrue(WajibGantiSandi.objects.filter(pengguna=self.reviewer).exists())
+
+
+class BuatAkunDariNaskahTest(DasarTest):
+    def test_buat_akun_dari_nrp_di_naskah(self):
+        from .models import WajibGantiSandi
+
+        self.dokumen("NKP A", ["isi a"], penulis="RITA CONTOH LESTARI, S.H", nrp_penulis="78040001")
+        self.dokumen("PB A", ["isi b"], penulis="Rita Contoh Lestari, S.H")  # PB tanpa NRP, orang sama
+        self.dokumen("NKP B", ["isi c"], penulis="ERIESTU RIZQI CONTOH, S.Sos.", nrp_penulis="93030001")
+        self.dokumen("PB B", ["isi d"], penulis="ERIESTU R. CONTOH, S.Sos.")  # variasi nama orang yang sama
+        self.dokumen("NKP C", ["isi e"], penulis="HANDOKO CONTOH")  # tidak ada NRP sama sekali
+
+        out = StringIO()
+        call_command("buat_akun_dari_naskah", sandi="qwerty123", kering=True, stdout=out)
+        self.assertIn("2 akun akan dibuat", out.getvalue())
+        self.assertFalse(User.objects.filter(username="78040001").exists())
+
+        out = StringIO()
+        call_command("buat_akun_dari_naskah", sandi="qwerty123", stdout=out)
+        teks = out.getvalue()
+        self.assertIn("2 akun dibuat", teks)
+        self.assertIn("1 penulis tanpa NRP", teks)
+        self.assertIn("Handoko Contoh", teks)
+        self.assertNotIn("Eriestu R. Contoh", teks.split("tanpa NRP")[1])
+        u = User.objects.get(username="78040001")
+        self.assertEqual(u.first_name, "Rita Contoh Lestari, S.H")
+        self.assertTrue(u.check_password("qwerty123"))
+        self.assertTrue(WajibGantiSandi.objects.filter(pengguna=u).exists())
+        self.assertFalse(u.groups.exists())  # Pembaca
+
+        out = StringIO()
+        call_command("buat_akun_dari_naskah", sandi="qwerty123", stdout=out)
+        self.assertIn("0 akun dibuat, 2 sudah ada", out.getvalue())

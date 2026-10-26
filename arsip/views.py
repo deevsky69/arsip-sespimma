@@ -457,3 +457,32 @@ def ocr_status(request, pk):
             "pesan": dok.ocr_pesan,
         }
     )
+
+
+# ---------------------------------------------------------------------------
+# Ganti kata sandi
+# ---------------------------------------------------------------------------
+
+from django.contrib.auth.views import PasswordChangeView  # noqa: E402
+from django.urls import reverse_lazy  # noqa: E402
+
+
+class GantiSandiView(PasswordChangeView):
+    """Ganti kata sandi; sekaligus menghapus kewajiban ganti sandi (akun baru dengan sandi awal)."""
+
+    success_url = reverse_lazy("arsip:beranda")
+
+    def get_context_data(self, **kwargs):
+        from .models import WajibGantiSandi
+
+        konteks = super().get_context_data(**kwargs)
+        konteks["wajib_ganti"] = WajibGantiSandi.objects.filter(pengguna=self.request.user).exists()
+        return konteks
+
+    def form_valid(self, form):
+        from .models import WajibGantiSandi
+
+        respons = super().form_valid(form)
+        WajibGantiSandi.objects.filter(pengguna=self.request.user).delete()
+        messages.success(self.request, "Kata sandi berhasil diganti. Selamat menggunakan ARSIP SESPIMMA.")
+        return respons

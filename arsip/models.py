@@ -269,6 +269,20 @@ class TugasImpor(models.Model):
         return j
 
 
+class WajibGantiSandi(models.Model):
+    """Pengguna yang wajib mengganti kata sandi sebelum bisa memakai situs (mis. masih memakai sandi awal)."""
+
+    pengguna = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wajib_ganti_sandi")
+    dibuat = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "wajib ganti kata sandi"
+        verbose_name_plural = "wajib ganti kata sandi"
+
+    def __str__(self):
+        return str(self.pengguna)
+
+
 class LogAkses(models.Model):
     class Aksi(models.TextChoices):
         LIHAT = "lihat", "Melihat detail"
