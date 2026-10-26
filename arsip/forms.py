@@ -43,6 +43,7 @@ class FormUnggah(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if not boleh_terbitkan:
             del self.fields["terbitkan"]
+        self.fields["berkas"].help_text = f"Format PDF, ukuran maksimal {settings.ARSIP_MAKS_UKURAN_MB} MB."
         self.fields["kategori"].queryset = Kategori.objects.all()
         self.fields["angkatan"].queryset = Angkatan.objects.all()
         self.fields["kategori"].empty_label = "— pilih kategori —"

@@ -1155,3 +1155,18 @@ class PaketPindahTest(TransactionTestCase):
             z.writestr("lain.txt", "bukan paket")
         with self.assertRaisesMessage(CommandError, "bukan paket"):
             call_command("impor_data", str(palsu), stdout=StringIO())
+
+
+class BatasUnggahTest(DasarTest):
+    @override_settings(ARSIP_MAKS_UKURAN_MB=6)
+    def test_batas_ukuran_unggahan_6_mb(self):
+        self.client.force_login(self.pengunggah)
+        self.assertContains(self.client.get(reverse("arsip:unggah")), "ukuran maksimal 6 MB")
+        besar = b"%PDF-1.4\n" + b"0" * (6 * 1024 * 1024 + 10)
+        r = self.client.post(
+            reverse("arsip:unggah"),
+            {"kategori": self.nkp.pk, "angkatan": self.a71.pk, "judul": "Besar", "penulis": "X",
+             "berkas": SimpleUploadedFile("besar.pdf", besar)},
+        )
+        self.assertContains(r, "Ukuran file maksimal 6 MB")
+        self.assertEqual(Dokumen.objects.count(), 0)
